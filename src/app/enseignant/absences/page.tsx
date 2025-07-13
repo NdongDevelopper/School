@@ -28,11 +28,11 @@ export default function AbsencesEnseignant() {
   const [selectedStudent, setSelectedStudent] = useState<Etudiant | null>(null);
   const [newAbsence, setNewAbsence] = useState({ date: '', motif: '' });
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const niveauxAcademiques = ['L1', 'L2', 'L3', 'M1', 'M2'];
 
   useEffect(() => {
-    // Charger les données depuis localStorage ou données initiales
     const loadData = () => {
       if (!user?.nomSpecialite) return;
       
@@ -42,7 +42,6 @@ export default function AbsencesEnseignant() {
       if (savedData) {
         setEtudiants(JSON.parse(savedData));
       } else {
-        // Données initiales si aucune donnée sauvegardée
         const initialData = getInitialData();
         setEtudiants(initialData);
       }
@@ -51,7 +50,6 @@ export default function AbsencesEnseignant() {
     loadData();
   }, [niveau, user?.nomSpecialite]);
 
-  // Fonction pour obtenir les données initiales
   const getInitialData = () => {
     const data = {
       L1: [
@@ -139,14 +137,12 @@ export default function AbsencesEnseignant() {
     return data[niveau as keyof typeof data] || [];
   };
 
-  // Ajouter une absence à un étudiant
   const handleAddAbsence = (etudiant: Etudiant) => {
     setSelectedStudent(etudiant);
     setNewAbsence({ date: new Date().toISOString().split('T')[0], motif: '' });
     setModalOpen(true);
   };
 
-  // Confirmer l'ajout d'une absence
   const confirmAddAbsence = () => {
     if (!selectedStudent || !newAbsence.date || !newAbsence.motif) return;
     
@@ -154,7 +150,7 @@ export default function AbsencesEnseignant() {
       if (etud.id === selectedStudent.id) {
         const newAbsenceWithId = {
           ...newAbsence,
-          id: `abs-${Date.now()}` // ID unique
+          id: `abs-${Date.now()}`
         };
         return {
           ...etud,
@@ -166,7 +162,6 @@ export default function AbsencesEnseignant() {
     
     setEtudiants(updatedStudents);
     
-    // Sauvegarder dans localStorage
     if (user?.nomSpecialite) {
       const key = `absences_${user.nomSpecialite}_${niveau}`;
       localStorage.setItem(key, JSON.stringify(updatedStudents));
@@ -175,18 +170,15 @@ export default function AbsencesEnseignant() {
     setModalOpen(false);
   };
 
-  // Voir les détails d'un étudiant
   const viewDetails = (etudiant: Etudiant) => {
     setSelectedStudent(etudiant);
     setDetailsModalOpen(true);
   };
 
-  // Filtrer les étudiants par nom
   const filteredEtudiants = etudiants.filter(e => 
     e.nom.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Trouver la dernière date d'absence
   const getDerniereAbsence = (absences: Absence[]) => {
     if (absences.length === 0) return "";
     const dates = absences.map(a => new Date(a.date).getTime());
@@ -194,16 +186,13 @@ export default function AbsencesEnseignant() {
     return lastDate.toLocaleDateString('fr-FR');
   };
 
-  // Vérifie si le lien est actif
   const isActive = (path: string) => pathname === path;
 
-  // Statistiques des absences
   const totalStudents = etudiants.length;
   const withoutAbsences = etudiants.filter(e => e.absences.length === 0).length;
   const withAbsences = totalStudents - withoutAbsences;
   const totalAbsences = etudiants.reduce((acc, etud) => acc + etud.absences.length, 0);
 
-  // Date du jour formatée
   const today = new Date();
   const formattedDate = today.toLocaleDateString('fr-FR', { 
     day: 'numeric', 
@@ -214,9 +203,36 @@ export default function AbsencesEnseignant() {
   return (
     <RouteGuard roles={['enseignant']}>
       <div className="flex min-h-screen bg-gray-50">
-        {/* Sidebar */}
-        <aside className="hidden md:block w-64 bg-blue-800 text-white shadow-lg flex flex-col">
-          <div className="p-6 border-b border-blue-600">
+        {/* Mobile Sidebar Overlay */}
+        {sidebarOpen && (
+          <div 
+            className="fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          ></div>
+        )}
+
+        {/* Sidebar - Responsive */}
+        <aside 
+          className={`fixed md:relative z-50 md:z-auto inset-y-0 left-0 w-64 bg-blue-800 text-white shadow-lg flex flex-col transform transition-transform duration-300 ease-in-out ${
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+          }`}
+        >
+          <div className="p-4 flex justify-between items-center border-b border-blue-600 md:hidden">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                <i className="fa-solid fa-graduation-cap text-blue-800 text-lg"></i>
+              </div>
+              <h2 className="text-lg font-semibold">Espace Enseignant</h2>
+            </div>
+            <button 
+              className="text-white text-xl"
+              onClick={() => setSidebarOpen(false)}
+            >
+              <i className="fa-solid fa-times"></i>
+            </button>
+          </div>
+          
+          <div className="p-4 md:p-6 border-b border-blue-600 hidden md:block">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
                 <i className="fa-solid fa-graduation-cap text-blue-800 text-lg"></i>
@@ -228,36 +244,64 @@ export default function AbsencesEnseignant() {
             </div>
           </div>
           
-          <nav className="mt-6 flex-1">
-            <ul className="space-y-2 px-4">
+          <nav className="mt-4 flex-1 overflow-y-auto">
+            <ul className="space-y-1 px-2">
               <li>
                 <Link href="/enseignant/dashboard">
-                  <div className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${isActive('/enseignant/dashboard') ? 'bg-blue-700' : 'hover:bg-blue-700'} transition-colors cursor-pointer`}>
-                    <i className="fa-solid fa-calendar-days"></i>
+                  <div 
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${
+                      isActive('/enseignant/dashboard') 
+                        ? 'bg-blue-700' 
+                        : 'hover:bg-blue-700'
+                    } transition-colors cursor-pointer`}
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    <i className="fa-solid fa-calendar-days w-5 text-center"></i>
                     <span>Emploi du temps</span>
                   </div>
                 </Link>
               </li>
               <li>
                 <Link href="/enseignant/notes">
-                  <div className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${isActive('/enseignant/notes') ? 'bg-blue-700' : 'hover:bg-blue-700'} transition-colors cursor-pointer`}>
-                    <i className="fa-solid fa-file-lines"></i>
+                  <div 
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${
+                      isActive('/enseignant/notes') 
+                        ? 'bg-blue-700' 
+                        : 'hover:bg-blue-700'
+                    } transition-colors cursor-pointer`}
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    <i className="fa-solid fa-file-lines w-5 text-center"></i>
                     <span>Notes des Étudiants</span>
                   </div>
                 </Link>
               </li>
               <li>
                 <Link href="/enseignant/absences">
-                  <div className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${isActive('/enseignant/absences') ? 'bg-blue-700' : 'hover:bg-blue-700'} transition-colors cursor-pointer`}>
-                    <i className="fa-solid fa-user-xmark"></i>
+                  <div 
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${
+                      isActive('/enseignant/absences') 
+                        ? 'bg-blue-700' 
+                        : 'hover:bg-blue-700'
+                    } transition-colors cursor-pointer`}
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    <i className="fa-solid fa-user-xmark w-5 text-center"></i>
                     <span>Absences</span>
                   </div>
                 </Link>
               </li>
               <li>
                 <Link href="/enseignant/deliberations">
-                  <div className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${isActive('/enseignant/deliberations') ? 'bg-blue-700' : 'hover:bg-blue-700'} transition-colors cursor-pointer`}>
-                    <i className="fa-solid fa-clipboard-check"></i>
+                  <div 
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${
+                      isActive('/enseignant/deliberations') 
+                        ? 'bg-blue-700' 
+                        : 'hover:bg-blue-700'
+                    } transition-colors cursor-pointer`}
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    <i className="fa-solid fa-clipboard-check w-5 text-center"></i>
                     <span>Délibérations</span>
                   </div>
                 </Link>
@@ -272,24 +316,36 @@ export default function AbsencesEnseignant() {
                 alt="Professeur" 
                 className="w-8 h-8 rounded-full" 
               />
-              <div>
-                <p className="text-sm font-medium">{user?.username}</p>
-                <p className="text-xs text-blue-200">Enseignant {user?.nomSpecialite}</p>
+              <div className="overflow-hidden">
+                <p className="text-sm font-medium truncate">{user?.username}</p>
+                <p className="text-xs text-blue-200 truncate">Enseignant {user?.nomSpecialite}</p>
               </div>
             </div>
           </div>
         </aside>
 
         <div className="flex-1 flex flex-col overflow-hidden">
-          <header className="bg-white shadow-sm border-b p-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Gestion des Absences</h1>
-                <p className="text-gray-600 mt-1">Enregistrer et suivre les absences des étudiants</p>
+          <header className="bg-white shadow-sm border-b p-4 md:p-6">
+            <div className="flex justify-between items-center mb-4 md:mb-0">
+              <div className="flex items-center">
+                <button 
+                  className="md:hidden text-gray-500 mr-3"
+                  onClick={() => setSidebarOpen(true)}
+                >
+                  <i className="fa-solid fa-bars text-xl"></i>
+                </button>
+                <h1 className="text-xl md:text-2xl font-bold text-gray-900">Gestion des Absences</h1>
               </div>
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-500">Aujourd'hui: {formattedDate}</span>
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+              <button className="md:hidden bg-blue-600 text-white p-2 rounded-lg">
+                <i className="fa-solid fa-download"></i>
+              </button>
+            </div>
+            
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 md:gap-4">
+              <p className="text-gray-600 text-sm md:text-base">Enregistrer et suivre les absences des étudiants</p>
+              <div className="flex items-center space-x-2 md:space-x-4 w-full md:w-auto">
+                <span className="text-xs md:text-sm text-gray-500 flex-shrink-0">Aujourd'hui: {formattedDate}</span>
+                <button className="hidden md:flex bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm">
                   <i className="fa-solid fa-download mr-2"></i>
                   Exporter
                 </button>
@@ -297,13 +353,13 @@ export default function AbsencesEnseignant() {
             </div>
           </header>
 
-          <main className="flex-1 overflow-auto p-6">
-            <div className="border-b border-gray-200 mb-6">
-              <nav className="-mb-px flex space-x-8 overflow-x-auto">
+          <main className="flex-1 overflow-auto p-4 md:p-6">
+            <div className="border-b border-gray-200 mb-4 md:mb-6">
+              <nav className="-mb-px flex space-x-4 overflow-x-auto pb-1">
                 {niveauxAcademiques.map((niv) => (
                   <button
                     key={niv}
-                    className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                    className={`py-2 px-1 border-b-2 font-medium text-xs md:text-sm whitespace-nowrap ${
                       niveau === niv
                         ? 'border-blue-600 text-blue-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -316,50 +372,50 @@ export default function AbsencesEnseignant() {
               </nav>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div className="bg-white rounded-lg shadow-sm border p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Rechercher un étudiant</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-4 md:mb-6">
+              <div className="bg-white rounded-lg shadow-sm border p-4 md:p-6">
+                <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2 md:mb-4">Rechercher un étudiant</h3>
                 <input
                   type="text"
-                  className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-blue-600"
                   placeholder="Nom de l'étudiant"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
               
-              <div className="bg-white rounded-lg shadow-sm border p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Filtrer par date</h3>
-                <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white rounded-lg shadow-sm border p-4 md:p-6">
+                <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-2 md:mb-4">Filtrer par date</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Date de début</label>
+                    <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1">Date de début</label>
                     <input
                       type="date"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-600"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-600"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Date de fin</label>
+                    <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1">Date de fin</label>
                     <input
                       type="date"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-600"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-600"
                     />
                   </div>
                 </div>
               </div>
             </div>
             
-            <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-              <div className="p-6 border-b border-gray-200">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Liste des étudiants - {niveau}</h3>
-                  <div className="flex items-center space-x-3">
-                    <button className="text-blue-600 hover:text-blue-800 font-medium text-sm">
+            <div className="bg-white rounded-lg shadow-sm border overflow-hidden mb-4 md:mb-6">
+              <div className="p-4 md:p-6 border-b border-gray-200">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                  <h3 className="text-base md:text-lg font-semibold text-gray-900">Liste des étudiants - {niveau}</h3>
+                  <div className="flex items-center space-x-2">
+                    <button className="text-blue-600 hover:text-blue-800 font-medium text-xs md:text-sm">
                       <i className="fa-solid fa-check-double mr-1"></i>
-                      Tout marquer présent
+                      <span className="hidden sm:inline">Tout marquer présent</span>
                     </button>
-                    <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm">
-                      <i className="fa-solid fa-save mr-2"></i>
+                    <button className="bg-blue-600 text-white px-3 py-1 md:px-4 md:py-2 rounded-lg hover:bg-blue-700 transition-colors text-xs md:text-sm">
+                      <i className="fa-solid fa-save mr-1 md:mr-2"></i>
                       Enregistrer
                     </button>
                   </div>
@@ -370,28 +426,28 @@ export default function AbsencesEnseignant() {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Étudiant</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre d'absences</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dernière absence</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                      <th className="px-4 py-2 md:px-6 md:py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider">Étudiant</th>
+                      <th className="px-4 py-2 md:px-6 md:py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider">Absences</th>
+                      <th className="px-4 py-2 md:px-6 md:py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Dernière</th>
+                      <th className="px-4 py-2 md:px-6 md:py-3 text-left text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {filteredEtudiants.map((etudiant) => (
                       <tr key={etudiant.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <img 
                               src={`https://i.pravatar.cc/150?u=${etudiant.id}`} 
                               alt={etudiant.nom} 
-                              className="w-8 h-8 rounded-full mr-3" 
+                              className="w-8 h-8 rounded-full mr-2 md:mr-3" 
                             />
-                            <div>
-                              <div className="font-medium text-gray-900">{etudiant.nom}</div>
+                            <div className="truncate max-w-[120px] md:max-w-none">
+                              <div className="font-medium text-gray-900 text-sm md:text-base truncate">{etudiant.nom}</div>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap">
                           <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                             etudiant.absences.length === 0 
                               ? 'bg-green-100 text-green-800' 
@@ -402,25 +458,25 @@ export default function AbsencesEnseignant() {
                             {etudiant.absences.length} {etudiant.absences.length === 1 ? 'absence' : 'absences'}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                        <td className="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-gray-500 hidden sm:table-cell">
                           {etudiant.absences.length > 0 
                             ? getDerniereAbsence(etudiant.absences) 
                             : "Aucune"}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap space-x-2">
+                        <td className="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap space-x-1 md:space-x-2">
                           <button 
-                            className="text-blue-600 hover:text-blue-800 px-3 py-1 bg-blue-50 rounded-md text-sm"
+                            className="text-blue-600 hover:text-blue-800 px-2 py-1 bg-blue-50 rounded-md text-xs md:text-sm"
                             onClick={() => handleAddAbsence(etudiant)}
                           >
                             <i className="fa-solid fa-plus mr-1"></i>
-                            Ajouter
+                            <span className="hidden sm:inline">Ajouter</span>
                           </button>
                           <button 
-                            className="text-gray-600 hover:text-gray-800 px-3 py-1 bg-gray-50 rounded-md text-sm"
+                            className="text-gray-600 hover:text-gray-800 px-2 py-1 bg-gray-50 rounded-md text-xs md:text-sm"
                             onClick={() => viewDetails(etudiant)}
                           >
                             <i className="fa-solid fa-eye mr-1"></i>
-                            Détails
+                            <span className="hidden sm:inline">Détails</span>
                           </button>
                         </td>
                       </tr>
@@ -430,48 +486,48 @@ export default function AbsencesEnseignant() {
               </div>
             </div>
             
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="bg-white rounded-lg shadow-sm border p-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+              <div className="bg-white rounded-lg shadow-sm border p-3 md:p-4">
                 <div className="flex items-center">
                   <div className="p-2 bg-blue-100 rounded-lg">
                     <i className="fa-solid fa-users text-blue-600"></i>
                   </div>
                   <div className="ml-3">
-                    <p className="text-sm font-medium text-gray-500">Total étudiants</p>
-                    <p className="text-2xl font-semibold text-gray-900">{totalStudents}</p>
+                    <p className="text-xs md:text-sm font-medium text-gray-500">Total étudiants</p>
+                    <p className="text-xl md:text-2xl font-semibold text-gray-900">{totalStudents}</p>
                   </div>
                 </div>
               </div>
-              <div className="bg-white rounded-lg shadow-sm border p-4">
+              <div className="bg-white rounded-lg shadow-sm border p-3 md:p-4">
                 <div className="flex items-center">
                   <div className="p-2 bg-green-100 rounded-lg">
                     <i className="fa-solid fa-user-check text-green-600"></i>
                   </div>
                   <div className="ml-3">
-                    <p className="text-sm font-medium text-gray-500">Sans absence</p>
-                    <p className="text-2xl font-semibold text-gray-900">{withoutAbsences}</p>
+                    <p className="text-xs md:text-sm font-medium text-gray-500">Sans absence</p>
+                    <p className="text-xl md:text-2xl font-semibold text-gray-900">{withoutAbsences}</p>
                   </div>
                 </div>
               </div>
-              <div className="bg-white rounded-lg shadow-sm border p-4">
+              <div className="bg-white rounded-lg shadow-sm border p-3 md:p-4">
                 <div className="flex items-center">
                   <div className="p-2 bg-red-100 rounded-lg">
                     <i className="fa-solid fa-user-xmark text-red-600"></i>
                   </div>
                   <div className="ml-3">
-                    <p className="text-sm font-medium text-gray-500">Avec absence</p>
-                    <p className="text-2xl font-semibold text-gray-900">{withAbsences}</p>
+                    <p className="text-xs md:text-sm font-medium text-gray-500">Avec absence</p>
+                    <p className="text-xl md:text-2xl font-semibold text-gray-900">{withAbsences}</p>
                   </div>
                 </div>
               </div>
-              <div className="bg-white rounded-lg shadow-sm border p-4">
+              <div className="bg-white rounded-lg shadow-sm border p-3 md:p-4">
                 <div className="flex items-center">
                   <div className="p-2 bg-yellow-100 rounded-lg">
                     <i className="fa-solid fa-clock text-yellow-600"></i>
                   </div>
                   <div className="ml-3">
-                    <p className="text-sm font-medium text-gray-500">Total absences</p>
-                    <p className="text-2xl font-semibold text-gray-900">{totalAbsences}</p>
+                    <p className="text-xs md:text-sm font-medium text-gray-500">Total absences</p>
+                    <p className="text-xl md:text-2xl font-semibold text-gray-900">{totalAbsences}</p>
                   </div>
                 </div>
               </div>
@@ -485,7 +541,7 @@ export default function AbsencesEnseignant() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl w-full max-w-md">
             <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-xl font-bold">Ajouter une absence</h3>
+              <h3 className="text-lg md:text-xl font-bold">Ajouter une absence</h3>
               <button 
                 className="text-gray-500 hover:text-gray-700"
                 onClick={() => setModalOpen(false)}
@@ -494,40 +550,40 @@ export default function AbsencesEnseignant() {
               </button>
             </div>
 
-            <div className="p-6">
-              <div className="mb-4">
-                <p className="text-lg font-medium mb-2">Étudiant: <span className="text-blue-600">{selectedStudent.nom}</span></p>
+            <div className="p-4 md:p-6">
+              <div className="mb-3 md:mb-4">
+                <p className="text-base md:text-lg font-medium mb-1 md:mb-2">Étudiant: <span className="text-blue-600">{selectedStudent.nom}</span></p>
               </div>
               
-              <div className="mb-4">
+              <div className="mb-3 md:mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Date de l'absence</label>
                 <input
                   type="date"
-                  className="w-full border border-gray-300 rounded-md shadow-sm p-2"
+                  className="w-full border border-gray-300 rounded-md shadow-sm p-2 text-sm md:text-base"
                   value={newAbsence.date}
                   onChange={(e) => setNewAbsence({...newAbsence, date: e.target.value})}
                 />
               </div>
               
-              <div className="mb-6">
+              <div className="mb-4 md:mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Motif de l'absence</label>
                 <textarea
-                  className="w-full border border-gray-300 rounded-md shadow-sm p-2 h-24"
+                  className="w-full border border-gray-300 rounded-md shadow-sm p-2 h-20 md:h-24 text-sm md:text-base"
                   placeholder="Entrez le motif de l'absence..."
                   value={newAbsence.motif}
                   onChange={(e) => setNewAbsence({...newAbsence, motif: e.target.value})}
                 />
               </div>
               
-              <div className="flex justify-end gap-3">
+              <div className="flex justify-end gap-2 md:gap-3">
                 <button 
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  className="px-3 py-1 md:px-4 md:py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 text-sm md:text-base"
                   onClick={() => setModalOpen(false)}
                 >
                   Annuler
                 </button>
                 <button 
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                  className="px-3 py-1 md:px-4 md:py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 text-sm md:text-base"
                   onClick={confirmAddAbsence}
                   disabled={!newAbsence.date || !newAbsence.motif}
                 >
@@ -544,7 +600,7 @@ export default function AbsencesEnseignant() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl w-full max-w-md max-h-[80vh] overflow-hidden">
             <div className="flex justify-between items-center p-4 border-b">
-              <h3 className="text-xl font-bold">Détails des absences</h3>
+              <h3 className="text-lg md:text-xl font-bold">Détails des absences</h3>
               <button 
                 className="text-gray-500 hover:text-gray-700"
                 onClick={() => setDetailsModalOpen(false)}
@@ -553,39 +609,39 @@ export default function AbsencesEnseignant() {
               </button>
             </div>
 
-            <div className="p-6">
-              <div className="mb-4">
-                <p className="text-lg font-medium mb-1">Étudiant: <span className="text-blue-600">{selectedStudent.nom}</span></p>
-                <p className="text-sm text-gray-600">
+            <div className="p-4 md:p-6">
+              <div className="mb-3 md:mb-4">
+                <p className="text-base md:text-lg font-medium mb-1">Étudiant: <span className="text-blue-600">{selectedStudent.nom}</span></p>
+                <p className="text-xs md:text-sm text-gray-600">
                   Total d'absences: <span className="font-semibold">{selectedStudent.absences.length}</span>
                 </p>
               </div>
               
               {selectedStudent.absences.length > 0 ? (
-                <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
+                <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-2">
                   {selectedStudent.absences.map((absence) => (
                     <div key={absence.id} className="border-b pb-3 last:border-b-0">
                       <div className="flex justify-between items-start">
                         <div>
-                          <p className="font-medium text-gray-900">
+                          <p className="font-medium text-gray-900 text-sm md:text-base">
                             {new Date(absence.date).toLocaleDateString('fr-FR')}
                           </p>
-                          <p className="text-gray-600 text-sm">{absence.motif}</p>
+                          <p className="text-gray-600 text-xs md:text-sm">{absence.motif}</p>
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-gray-500">
-                  <i className="fa-solid fa-check-circle text-3xl text-green-500 mb-3"></i>
-                  <p>Aucune absence enregistrée pour cet étudiant</p>
+                <div className="text-center py-6 md:py-8 text-gray-500">
+                  <i className="fa-solid fa-check-circle text-2xl md:text-3xl text-green-500 mb-2 md:mb-3"></i>
+                  <p className="text-sm md:text-base">Aucune absence enregistrée</p>
                 </div>
               )}
               
-              <div className="mt-6 flex justify-end">
+              <div className="mt-4 md:mt-6 flex justify-end">
                 <button 
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  className="px-3 py-1 md:px-4 md:py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm md:text-base"
                   onClick={() => setDetailsModalOpen(false)}
                 >
                   Fermer

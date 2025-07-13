@@ -42,6 +42,7 @@ export default function NotesEnseignant() {
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const itemsPerPage = 4;
@@ -299,12 +300,39 @@ export default function NotesEnseignant() {
   return (
     <RouteGuard roles={['enseignant']}>
       <div className="flex min-h-screen bg-gray-50">
-        {/* Sidebar fixe */}
-        <aside className="fixed left-0 top-0 h-full w-64 bg-blue-900 text-white shadow-lg z-40">
-          <div className="p-6 border-b border-blue-700">
+        {/* Mobile Sidebar Overlay */}
+        {sidebarOpen && (
+          <div 
+            className="fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          ></div>
+        )}
+
+        {/* Sidebar - Responsive */}
+        <aside 
+          className={`fixed md:relative z-50 md:z-auto inset-y-0 left-0 w-64 bg-blue-800 text-white shadow-lg flex flex-col transform transition-transform duration-300 ease-in-out ${
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+          }`}
+        >
+          <div className="p-4 flex justify-between items-center border-b border-blue-600 md:hidden">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                <i className="fa-solid fa-graduation-cap text-blue-900 text-lg"></i>
+                <i className="fa-solid fa-graduation-cap text-blue-800 text-lg"></i>
+              </div>
+              <h2 className="text-lg font-semibold">Espace Enseignant</h2>
+            </div>
+            <button 
+              className="text-white text-xl"
+              onClick={() => setSidebarOpen(false)}
+            >
+              <i className="fa-solid fa-times"></i>
+            </button>
+          </div>
+          
+          <div className="p-4 md:p-6 border-b border-blue-600 hidden md:block">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
+                <i className="fa-solid fa-graduation-cap text-blue-800 text-lg"></i>
               </div>
               <div>
                 <h2 className="text-lg font-semibold">Espace Enseignant</h2>
@@ -313,36 +341,64 @@ export default function NotesEnseignant() {
             </div>
           </div>
           
-          <nav className="p-4">
-            <ul className="space-y-2">
+          <nav className="mt-4 flex-1 overflow-y-auto">
+            <ul className="space-y-1 px-2">
               <li>
                 <Link href="/enseignant/dashboard">
-                  <div className={`flex items-center space-x-3 p-3 rounded-lg ${isActive('/enseignant/dashboard') ? 'bg-blue-700 text-white' : 'text-blue-200 hover:bg-blue-700 hover:text-white'} transition-colors cursor-pointer`}>
-                    <i className="fa-solid fa-calendar-days text-lg"></i>
+                  <div 
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${
+                      isActive('/enseignant/dashboard') 
+                        ? 'bg-blue-700' 
+                        : 'hover:bg-blue-700'
+                    } transition-colors cursor-pointer`}
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    <i className="fa-solid fa-calendar-days w-5 text-center"></i>
                     <span>Emploi du temps</span>
                   </div>
                 </Link>
               </li>
               <li>
                 <Link href="/enseignant/notes">
-                  <div className={`flex items-center space-x-3 p-3 rounded-lg ${isActive('/enseignant/notes') ? 'bg-blue-700 text-white' : 'text-blue-200 hover:bg-blue-700 hover:text-white'} transition-colors cursor-pointer`}>
-                    <i className="fa-solid fa-clipboard-list text-lg"></i>
+                  <div 
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${
+                      isActive('/enseignant/notes') 
+                        ? 'bg-blue-700' 
+                        : 'hover:bg-blue-700'
+                    } transition-colors cursor-pointer`}
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    <i className="fa-solid fa-file-lines w-5 text-center"></i>
                     <span>Notes des Étudiants</span>
                   </div>
                 </Link>
               </li>
               <li>
                 <Link href="/enseignant/absences">
-                  <div className={`flex items-center space-x-3 p-3 rounded-lg ${isActive('/enseignant/absences') ? 'bg-blue-700 text-white' : 'text-blue-200 hover:bg-blue-700 hover:text-white'} transition-colors cursor-pointer`}>
-                    <i className="fa-solid fa-user-clock text-lg"></i>
+                  <div 
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${
+                      isActive('/enseignant/absences') 
+                        ? 'bg-blue-700' 
+                        : 'hover:bg-blue-700'
+                    } transition-colors cursor-pointer`}
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    <i className="fa-solid fa-user-xmark w-5 text-center"></i>
                     <span>Absences</span>
                   </div>
                 </Link>
               </li>
               <li>
                 <Link href="/enseignant/deliberations">
-                  <div className={`flex items-center space-x-3 p-3 rounded-lg ${isActive('/enseignant/deliberations') ? 'bg-blue-700 text-white' : 'text-blue-200 hover:bg-blue-700 hover:text-white'} transition-colors cursor-pointer`}>
-                    <i className="fa-solid fa-gavel text-lg"></i>
+                  <div 
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg ${
+                      isActive('/enseignant/deliberations') 
+                        ? 'bg-blue-700' 
+                        : 'hover:bg-blue-700'
+                    } transition-colors cursor-pointer`}
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    <i className="fa-solid fa-clipboard-check w-5 text-center"></i>
                     <span>Délibérations</span>
                   </div>
                 </Link>
@@ -350,116 +406,126 @@ export default function NotesEnseignant() {
             </ul>
           </nav>
           
-          <div className="absolute bottom-0 w-64 p-4 border-t border-blue-700">
+          <div className="p-4 border-t border-blue-600">
             <div className="flex items-center space-x-3">
               <img 
                 src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg" 
                 alt="Professeur" 
                 className="w-8 h-8 rounded-full" 
               />
-              <div>
-                <p className="text-sm font-medium">{user?.username}</p>
-                <p className="text-xs text-blue-200">Enseignant {user?.nomSpecialite}</p>
+              <div className="overflow-hidden">
+                <p className="text-sm font-medium truncate">{user?.username}</p>
+                <p className="text-xs text-blue-200 truncate">Enseignant {user?.nomSpecialite}</p>
               </div>
             </div>
           </div>
         </aside>
 
-        <div className="flex-1 flex flex-col ml-64">
+        <div className="flex-1 flex flex-col overflow-hidden">
           {/* Header */}
-          <header className="bg-white shadow-sm border-b px-6 py-4">
+          <header className="bg-white shadow-sm border-b px-4 py-3 sm:px-6 sm:py-4">
             <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-800">Notes des Étudiants</h1>
-                <p className="text-gray-600">Gestion des notes - {user?.nomSpecialite}</p>
-              </div>
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center">
                 <button 
-                  className="px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition-colors flex items-center"
+                  className="md:hidden mr-3 text-gray-600"
+                  onClick={() => setSidebarOpen(true)}
+                >
+                  <i className="fa-solid fa-bars text-xl"></i>
+                </button>
+                <div>
+                  <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">Notes des Étudiants</h1>
+                  <p className="text-xs sm:text-sm text-gray-600">Gestion des notes - {user?.nomSpecialite}</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2 sm:space-x-4">
+                <button 
+                  className="px-2 py-1 sm:px-4 sm:py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition-colors flex items-center text-xs sm:text-sm"
                   onClick={() => {
                     setIsEditing(false);
                     setModalOpen(true);
                   }}
                 >
-                  <i className="fa-solid fa-plus mr-2"></i>
-                  Ajouter Note Étudiant
+                  <i className="fa-solid fa-plus mr-1"></i>
+                  <span className="hidden sm:inline">Ajouter Note</span>
+                  <span className="sm:hidden">Ajouter</span>
                 </button>
                 <img 
                   src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg" 
                   alt="Profile" 
-                  className="w-10 h-10 rounded-full"
+                  className="w-8 h-8 rounded-full"
                 />
               </div>
             </div>
           </header>
 
           {/* Onglets des niveaux */}
-          <div className="bg-white border-b px-6 py-3">
-            <div className="flex flex-wrap gap-2">
+          <div className="bg-white border-b px-3 py-2 sm:px-6 sm:py-3 overflow-x-auto">
+            <div className="flex gap-1 sm:gap-2 min-w-max">
               {niveauxAcademiques.map((niv) => (
                 <button
                   key={niv}
-                  className={`px-4 py-2 rounded-lg font-medium text-sm ${
+                  className={`px-2 py-1 sm:px-4 sm:py-2 rounded-lg font-medium text-xs sm:text-sm whitespace-nowrap ${
                     niveau === niv 
                       ? 'bg-blue-700 text-white' 
                       : 'bg-white text-blue-700 border border-blue-700 hover:bg-blue-50'
                   }`}
                   onClick={() => setNiveau(niv)}
                 >
-                  {niv.startsWith('L') ? 'Licence' : 'Master'} {niv.substring(1)} ({niv})
+                  <span className="hidden sm:inline">{niv.startsWith('L') ? 'Licence' : 'Master'} {niv.substring(1)}</span>
+                  <span className="sm:hidden">{niv}</span>
                 </button>
               ))}
             </div>
           </div>
 
           {/* Contenu principal */}
-          <div className="p-4 md:p-6 flex-1">
+          <div className="p-2 sm:p-4 md:p-6 flex-1">
             {/* Cartes de statistiques */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white p-4 rounded-xl shadow-sm border">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
+              <div className="bg-white p-2 sm:p-4 rounded-xl shadow-sm border">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-600 text-sm">Total Étudiants</p>
-                    <p className="text-xl md:text-2xl font-bold text-gray-800">{totalEtudiants}</p>
+                    <p className="text-xs sm:text-sm text-gray-600">Total Étudiants</p>
+                    <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800">{totalEtudiants}</p>
                   </div>
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <i className="fa-solid fa-users text-blue-700"></i>
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <i className="fa-solid fa-users text-blue-700 text-sm sm:text-base"></i>
                   </div>
                 </div>
               </div>
               
-              <div className="bg-white p-4 rounded-xl shadow-sm border">
+              <div className="bg-white p-2 sm:p-4 rounded-xl shadow-sm border">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-600 text-sm">Moyenne Classe</p>
-                    <p className="text-xl md:text-2xl font-bold text-green-600">{moyenneClasse.toFixed(1)}</p>
+                    <p className="text-xs sm:text-sm text-gray-600">Moyenne Classe</p>
+                    <p className="text-lg sm:text-xl md:text-2xl font-bold text-green-600">{moyenneClasse.toFixed(1)}</p>
                   </div>
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                    <i className="fa-solid fa-chart-line text-green-600"></i>
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                    <i className="fa-solid fa-chart-line text-green-600 text-sm sm:text-base"></i>
                   </div>
                 </div>
               </div>
               
-              <div className="bg-white p-4 rounded-xl shadow-sm border">
+              <div className="bg-white p-2 sm:p-4 rounded-xl shadow-sm border">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-600 text-sm">Admis</p>
-                    <p className="text-xl md:text-2xl font-bold text-green-600">{admis}</p>
+                    <p className="text-xs sm:text-sm text-gray-600">Admis</p>
+                    <p className="text-lg sm:text-xl md:text-2xl font-bold text-green-600">{admis}</p>
                   </div>
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                    <i className="fa-solid fa-check text-green-600"></i>
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                    <i className="fa-solid fa-check text-green-600 text-sm sm:text-base"></i>
                   </div>
                 </div>
               </div>
               
-              <div className="bg-white p-4 rounded-xl shadow-sm border">
+              <div className="bg-white p-2 sm:p-4 rounded-xl shadow-sm border">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-600 text-sm">En Rattrapage</p>
-                    <p className="text-xl md:text-2xl font-bold text-orange-600">{rattrapage}</p>
+                    <p className="text-xs sm:text-sm text-gray-600">Rattrapage</p>
+                    <p className="text-lg sm:text-xl md:text-2xl font-bold text-orange-600">{rattrapage}</p>
                   </div>
-                  <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                    <i className="fa-solid fa-exclamation-triangle text-orange-600"></i>
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                    <i className="fa-solid fa-exclamation-triangle text-orange-600 text-sm sm:text-base"></i>
                   </div>
                 </div>
               </div>
@@ -467,67 +533,67 @@ export default function NotesEnseignant() {
 
             {/* Tableau des étudiants */}
             <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-              <div className="p-4 md:p-6 border-b">
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                  <h3 className="text-lg font-semibold text-gray-800">
+              <div className="p-3 sm:p-4 md:p-6 border-b">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                  <h3 className="text-sm sm:text-base md:text-lg font-semibold text-gray-800">
                     Notes - {niveau.startsWith('L') ? 'Licence' : 'Master'} {niveau.substring(1)} {user?.nomSpecialite}
                   </h3>
-                  <div className="flex items-center gap-3 w-full md:w-auto">
+                  <div className="flex items-center gap-2 w-full md:w-auto">
                     <div className="relative flex-1">
                       <input 
                         type="text" 
                         placeholder="Rechercher étudiant..." 
-                        className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-700 focus:border-transparent w-full"
+                        className="pl-8 pr-3 py-1 sm:pl-10 sm:pr-4 sm:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-700 focus:border-transparent w-full text-xs sm:text-sm"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                       />
-                      <i className="fa-solid fa-search absolute left-3 top-3 text-gray-400"></i>
+                      <i className="fa-solid fa-search absolute left-2 top-1.5 sm:left-3 sm:top-2.5 text-gray-400 text-xs"></i>
                     </div>
                     <button className="p-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-                      <i className="fa-solid fa-filter"></i>
+                      <i className="fa-solid fa-filter text-xs sm:text-sm"></i>
                     </button>
                   </div>
                 </div>
               </div>
               
               <div className="overflow-x-auto">
-                <table className="w-full min-w-max">
+                <table className="w-full min-w-[600px]">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Étudiant</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contrôle 1</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contrôle 2</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Examen</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Moyenne</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                      <th className="px-1 py-1 sm:px-2 sm:py-1.5 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Étudiant</th>
+                      <th className="px-1 py-1 sm:px-2 sm:py-1.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">C1</th>
+                      <th className="px-1 py-1 sm:px-2 sm:py-1.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">C2</th>
+                      <th className="px-1 py-1 sm:px-2 sm:py-1.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Exam</th>
+                      <th className="px-1 py-1 sm:px-2 sm:py-1.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Moy</th>
+                      <th className="px-1 py-1 sm:px-2 sm:py-1.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                      <th className="px-1 py-1 sm:px-2 sm:py-1.5 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
                     {currentEtudiants.length > 0 ? (
                       currentEtudiants.map((etudiant) => (
                         <tr key={etudiant.id} className="hover:bg-gray-50">
-                          <td className="px-4 py-3 whitespace-nowrap">
+                          <td className="px-1 py-1 sm:px-2 sm:py-1.5 whitespace-nowrap">
                             <div className="flex items-center">
                               <img 
                                 src={etudiant.imageUrl} 
                                 alt={etudiant.nom} 
-                                className="w-10 h-10 rounded-full object-cover mr-3" 
+                                className="w-6 h-6 sm:w-8 sm:h-8 rounded-full object-cover mr-1 sm:mr-2" 
                               />
-                              <div>
-                                <div className="text-sm font-medium text-gray-900">{etudiant.nom}</div>
-                                <div className="text-xs text-gray-500">ID: {etudiant.numero}</div>
+                              <div className="min-w-0">
+                                <div className="text-xs font-medium text-gray-900 truncate max-w-[70px] sm:max-w-[120px] md:max-w-xs">{etudiant.nom}</div>
+                                <div className="text-[9px] sm:text-xs text-gray-500 truncate">ID: {etudiant.numero}</div>
                               </div>
                             </div>
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{etudiant.controle1}</td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{etudiant.controle2}</td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{etudiant.examen}</td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                          <td className="px-1 py-1 sm:px-2 sm:py-1.5 whitespace-nowrap text-xs sm:text-sm text-gray-900 text-center">{etudiant.controle1}</td>
+                          <td className="px-1 py-1 sm:px-2 sm:py-1.5 whitespace-nowrap text-xs sm:text-sm text-gray-900 text-center">{etudiant.controle2}</td>
+                          <td className="px-1 py-1 sm:px-2 sm:py-1.5 whitespace-nowrap text-xs sm:text-sm text-gray-900 text-center">{etudiant.examen}</td>
+                          <td className="px-1 py-1 sm:px-2 sm:py-1.5 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900 text-center">
                             {etudiant.moyenne.toFixed(1)}
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap">
-                            <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                          <td className="px-1 py-1 sm:px-2 sm:py-1.5 whitespace-nowrap text-center">
+                            <span className={`px-1.5 py-0.5 text-[9px] sm:text-xs font-semibold rounded-full ${
                               etudiant.statut === "Admis" || etudiant.statut === "Admise"
                                 ? 'bg-green-100 text-green-800' 
                                 : 'bg-orange-100 text-orange-800'
@@ -535,28 +601,28 @@ export default function NotesEnseignant() {
                               {etudiant.statut}
                             </span>
                           </td>
-                          <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
-                            <div className="flex items-center gap-2">
+                          <td className="px-1 py-1 sm:px-2 sm:py-1.5 whitespace-nowrap text-xs sm:text-sm font-medium text-center">
+                            <div className="flex items-center justify-center gap-1 sm:gap-2">
                               <button 
-                                className="text-blue-700 hover:text-blue-900"
+                                className="text-blue-700 hover:text-blue-900 p-0.5 sm:p-1"
                                 onClick={() => handleEditClick(etudiant)}
                                 title="Modifier"
                               >
-                                <i className="fa-solid fa-pen"></i>
+                                <i className="fa-solid fa-pen text-xs"></i>
                               </button>
                               <button 
-                                className="text-gray-500 hover:text-gray-700"
+                                className="text-gray-500 hover:text-gray-700 p-0.5 sm:p-1"
                                 onClick={() => handleViewClick(etudiant)}
                                 title="Voir détails"
                               >
-                                <i className="fa-solid fa-eye"></i>
+                                <i className="fa-solid fa-eye text-xs"></i>
                               </button>
                               <button 
-                                className="text-red-600 hover:text-red-800"
+                                className="text-red-600 hover:text-red-800 p-0.5 sm:p-1"
                                 onClick={() => handleDeleteStudent(etudiant.id)}
                                 title="Supprimer"
                               >
-                                <i className="fa-solid fa-trash"></i>
+                                <i className="fa-solid fa-trash text-xs"></i>
                               </button>
                             </div>
                           </td>
@@ -564,7 +630,7 @@ export default function NotesEnseignant() {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan={7} className="px-6 py-4 text-center text-gray-500">
+                        <td colSpan={7} className="px-4 py-3 text-center text-gray-500 text-sm">
                           Aucun étudiant trouvé
                         </td>
                       </tr>
@@ -575,14 +641,14 @@ export default function NotesEnseignant() {
               
               {/* Pagination */}
               {filteredEtudiants.length > 0 && (
-                <div className="px-4 md:px-6 py-4 border-t border-gray-200">
-                  <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                    <p className="text-sm text-gray-700">
+                <div className="px-2 sm:px-4 md:px-6 py-2 sm:py-3 border-t border-gray-200">
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-2">
+                    <p className="text-xs sm:text-sm text-gray-700">
                       Affichage de {indexOfFirstItem + 1} à {Math.min(indexOfLastItem, filteredEtudiants.length)} sur {filteredEtudiants.length} étudiants
                     </p>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-1">
                       <button 
-                        className={`px-3 py-1 border border-gray-300 rounded text-sm ${
+                        className={`px-1.5 py-0.5 text-xs border border-gray-300 rounded ${
                           currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-50'
                         }`}
                         onClick={() => handlePageChange(currentPage - 1)}
@@ -594,7 +660,7 @@ export default function NotesEnseignant() {
                       {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                         <button
                           key={page}
-                          className={`px-3 py-1 rounded text-sm ${
+                          className={`px-1.5 py-0.5 text-xs rounded ${
                             currentPage === page 
                               ? 'bg-blue-700 text-white' 
                               : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
@@ -606,7 +672,7 @@ export default function NotesEnseignant() {
                       ))}
                       
                       <button 
-                        className={`px-3 py-1 border border-gray-300 rounded text-sm ${
+                        className={`px-1.5 py-0.5 text-xs border border-gray-300 rounded ${
                           currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-50'
                         }`}
                         onClick={() => handlePageChange(currentPage + 1)}
@@ -625,11 +691,11 @@ export default function NotesEnseignant() {
 
       {/* Modal pour ajouter/modifier/voir les étudiants */}
       {modalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-10">
-              <h3 className="text-xl font-bold">
-                {isEditing ? "Modifier Étudiant" : (currentStudent ? "Détails Étudiant" : "Ajouter  Note Étudiant")}
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="bg-white rounded-xl w-full max-w-xs sm:max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center p-3 sm:p-4 border-b sticky top-0 bg-white z-10">
+              <h3 className="text-sm sm:text-base font-bold">
+                {isEditing ? "Modifier Étudiant" : (currentStudent ? "Détails Étudiant" : "Ajouter Note Étudiant")}
               </h3>
               <button 
                 className="text-gray-500 hover:text-gray-700"
@@ -644,43 +710,43 @@ export default function NotesEnseignant() {
               </button>
             </div>
 
-            <div className="p-4 md:p-6">
+            <div className="p-3 sm:p-4">
               {currentStudent ? (
-                <div className="space-y-4">
+                <div className="space-y-2 sm:space-y-3">
                   {!isEditing ? (
-                    <div className="space-y-4">
+                    <div className="space-y-2 sm:space-y-3">
                       <div className="flex flex-col items-center">
                         <img 
                           src={currentStudent.imageUrl} 
                           alt={currentStudent.nom} 
-                          className="w-24 h-24 rounded-full object-cover border-2 border-blue-200"
+                          className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-blue-200"
                         />
-                        <h4 className="text-lg font-semibold mt-2">{currentStudent.nom}</h4>
-                        <p className="text-gray-600">ID: {currentStudent.numero}</p>
+                        <h4 className="text-xs sm:text-sm font-semibold mt-1 sm:mt-2">{currentStudent.nom}</h4>
+                        <p className="text-gray-600 text-xs">ID: {currentStudent.numero}</p>
                       </div>
                       
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-gray-50 p-3 rounded-lg">
-                          <label className="block text-sm font-medium text-gray-700">Contrôle 1</label>
-                          <p className="mt-1 font-semibold">{currentStudent.controle1}</p>
+                      <div className="grid grid-cols-2 gap-1 sm:gap-2">
+                        <div className="bg-gray-50 p-2 rounded-lg">
+                          <label className="block text-xs font-medium text-gray-700">Contrôle 1</label>
+                          <p className="mt-0.5 font-semibold text-sm">{currentStudent.controle1}</p>
                         </div>
-                        <div className="bg-gray-50 p-3 rounded-lg">
-                          <label className="block text-sm font-medium text-gray-700">Contrôle 2</label>
-                          <p className="mt-1 font-semibold">{currentStudent.controle2}</p>
+                        <div className="bg-gray-50 p-2 rounded-lg">
+                          <label className="block text-xs font-medium text-gray-700">Contrôle 2</label>
+                          <p className="mt-0.5 font-semibold text-sm">{currentStudent.controle2}</p>
                         </div>
-                        <div className="bg-gray-50 p-3 rounded-lg">
-                          <label className="block text-sm font-medium text-gray-700">Examen</label>
-                          <p className="mt-1 font-semibold">{currentStudent.examen}</p>
+                        <div className="bg-gray-50 p-2 rounded-lg">
+                          <label className="block text-xs font-medium text-gray-700">Examen</label>
+                          <p className="mt-0.5 font-semibold text-sm">{currentStudent.examen}</p>
                         </div>
-                        <div className="bg-gray-50 p-3 rounded-lg">
-                          <label className="block text-sm font-medium text-gray-700">Moyenne</label>
-                          <p className="mt-1 font-semibold text-blue-700">{currentStudent.moyenne.toFixed(1)}</p>
+                        <div className="bg-gray-50 p-2 rounded-lg">
+                          <label className="block text-xs font-medium text-gray-700">Moyenne</label>
+                          <p className="mt-0.5 font-semibold text-blue-700 text-sm">{currentStudent.moyenne.toFixed(1)}</p>
                         </div>
                       </div>
                       
-                      <div className="bg-gray-50 p-3 rounded-lg">
-                        <label className="block text-sm font-medium text-gray-700">Statut</label>
-                        <span className={`px-3 py-1 mt-1 inline-block text-sm font-semibold rounded-full ${
+                      <div className="bg-gray-50 p-2 rounded-lg">
+                        <label className="block text-xs font-medium text-gray-700">Statut</label>
+                        <span className={`px-1.5 py-0.5 mt-0.5 inline-block text-xs font-semibold rounded-full ${
                           currentStudent.statut === "Admis" || currentStudent.statut === "Admise"
                             ? 'bg-green-100 text-green-800' 
                             : 'bg-orange-100 text-orange-800'
@@ -690,16 +756,16 @@ export default function NotesEnseignant() {
                       </div>
                     </div>
                   ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-2 sm:space-y-3">
                       <div className="flex flex-col items-center">
                         <div className="relative">
                           <img 
                             src={imagePreview || currentStudent.imageUrl} 
                             alt="Preview" 
-                            className="w-24 h-24 rounded-full object-cover border-2 border-blue-200"
+                            className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-blue-200"
                           />
                           <button 
-                            className="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-2"
+                            className="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-1"
                             onClick={triggerFileInput}
                             title="Changer la photo"
                           >
@@ -707,7 +773,7 @@ export default function NotesEnseignant() {
                           </button>
                         </div>
                         
-                        <div className="mt-2 flex gap-2">
+                        <div className="mt-1 flex gap-1">
                           <button 
                             className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded"
                             onClick={triggerFileInput}
@@ -723,30 +789,30 @@ export default function NotesEnseignant() {
                       </div>
                       
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Numéro étudiant</label>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Numéro étudiant</label>
                         <input
                           type="text"
                           name="numero"
                           value={currentStudent.numero}
                           onChange={handleStudentChange}
-                          className="w-full border border-gray-300 rounded-md shadow-sm p-2"
+                          className="w-full border border-gray-300 rounded-md shadow-sm p-1.5 text-xs"
                         />
                       </div>
                       
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Nom complet</label>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Nom complet</label>
                         <input
                           type="text"
                           name="nom"
                           value={currentStudent.nom}
                           onChange={handleStudentChange}
-                          className="w-full border border-gray-300 rounded-md shadow-sm p-2"
+                          className="w-full border border-gray-300 rounded-md shadow-sm p-1.5 text-xs"
                         />
                       </div>
                       
-                      <div className="grid grid-cols-3 gap-4">
+                      <div className="grid grid-cols-3 gap-1 sm:gap-2">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Contrôle 1</label>
+                          <label className="block text-xs font-medium text-gray-700 mb-1">C1</label>
                           <input
                             type="number"
                             name="controle1"
@@ -754,11 +820,11 @@ export default function NotesEnseignant() {
                             onChange={handleStudentChange}
                             min="0"
                             max="20"
-                            className="w-full border border-gray-300 rounded-md shadow-sm p-2"
+                            className="w-full border border-gray-300 rounded-md shadow-sm p-1.5 text-xs"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Contrôle 2</label>
+                          <label className="block text-xs font-medium text-gray-700 mb-1">C2</label>
                           <input
                             type="number"
                             name="controle2"
@@ -766,11 +832,11 @@ export default function NotesEnseignant() {
                             onChange={handleStudentChange}
                             min="0"
                             max="20"
-                            className="w-full border border-gray-300 rounded-md shadow-sm p-2"
+                            className="w-full border border-gray-300 rounded-md shadow-sm p-1.5 text-xs"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Examen</label>
+                          <label className="block text-xs font-medium text-gray-700 mb-1">Exam</label>
                           <input
                             type="number"
                             name="examen"
@@ -778,15 +844,15 @@ export default function NotesEnseignant() {
                             onChange={handleStudentChange}
                             min="0"
                             max="20"
-                            className="w-full border border-gray-300 rounded-md shadow-sm p-2"
+                            className="w-full border border-gray-300 rounded-md shadow-sm p-1.5 text-xs"
                           />
                         </div>
                       </div>
                       
-                      <div className="flex justify-between items-center bg-blue-50 p-3 rounded-lg">
+                      <div className="flex justify-between items-center bg-blue-50 p-1.5 sm:p-2 rounded-lg">
                         <div>
-                          <span className="text-sm font-medium">Moyenne: </span>
-                          <span className="font-semibold text-blue-700">
+                          <span className="text-xs font-medium">Moyenne: </span>
+                          <span className="font-semibold text-blue-700 text-xs">
                             {calculateMoyenne(
                               currentStudent.controle1,
                               currentStudent.controle2,
@@ -795,8 +861,8 @@ export default function NotesEnseignant() {
                           </span>
                         </div>
                         <div>
-                          <span className="text-sm font-medium">Statut: </span>
-                          <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                          <span className="text-xs font-medium">Statut: </span>
+                          <span className={`px-1.5 py-0.5 text-xs font-semibold rounded-full ${
                             calculateMoyenne(
                               currentStudent.controle1,
                               currentStudent.controle2,
@@ -818,20 +884,20 @@ export default function NotesEnseignant() {
                       </div>
                       
                       <button
-                        className="w-full bg-blue-700 text-white py-2 rounded-lg hover:bg-blue-800 transition-colors mt-2"
+                        className="w-full bg-blue-700 text-white py-1.5 rounded-lg hover:bg-blue-800 transition-colors mt-1 text-xs sm:text-sm"
                         onClick={handleUpdateStudent}
                       >
-                        <i className="fa-solid fa-save mr-2"></i>
+                        <i className="fa-solid fa-save mr-1"></i>
                         Mettre à jour
                       </button>
                     </div>
                   )}
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-2 sm:space-y-3">
                   <div className="flex flex-col items-center">
                     <div className="relative">
-                      <div className="w-24 h-24 rounded-full bg-gray-200 border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
+                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gray-200 border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
                         {imagePreview ? (
                           <img 
                             src={imagePreview} 
@@ -839,11 +905,11 @@ export default function NotesEnseignant() {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <i className="fa-solid fa-user text-gray-400 text-3xl"></i>
+                          <i className="fa-solid fa-user text-gray-400 text-lg sm:text-xl"></i>
                         )}
                       </div>
                       <button 
-                        className="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-2"
+                        className="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-1"
                         onClick={triggerFileInput}
                         title="Ajouter une photo"
                       >
@@ -851,12 +917,12 @@ export default function NotesEnseignant() {
                       </button>
                     </div>
                     
-                    <div className="mt-2 flex flex-col items-center">
+                    <div className="mt-1 flex flex-col items-center">
                       <button 
-                        className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded flex items-center mb-1"
+                        className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded flex items-center mb-0.5"
                         onClick={triggerFileInput}
                       >
-                        <i className="fa-solid fa-upload mr-2"></i> Télécharger une photo
+                        <i className="fa-solid fa-upload mr-1"></i> Télécharger une photo
                       </button>
                       {uploadStatus === 'uploading' && (
                         <span className="text-xs text-gray-500 flex items-center">
@@ -872,32 +938,32 @@ export default function NotesEnseignant() {
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Numéro étudiant</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Numéro étudiant</label>
                     <input
                       type="text"
                       name="numero"
                       value={newStudent.numero}
                       onChange={handleInputChange}
-                      className="w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      className="w-full border border-gray-300 rounded-md shadow-sm p-1.5 text-xs"
                       placeholder="Ex: L1-001"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Nom complet</label>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Nom complet</label>
                     <input
                       type="text"
                       name="nom"
                       value={newStudent.nom}
                       onChange={handleInputChange}
-                      className="w-full border border-gray-300 rounded-md shadow-sm p-2"
+                      className="w-full border border-gray-300 rounded-md shadow-sm p-1.5 text-xs"
                       placeholder="Ex: Ahmed Benali"
                     />
                   </div>
                   
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-3 gap-1 sm:gap-2">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Contrôle 1</label>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">C1</label>
                       <input
                         type="number"
                         name="controle1"
@@ -905,11 +971,11 @@ export default function NotesEnseignant() {
                         onChange={handleInputChange}
                         min="0"
                         max="20"
-                        className="w-full border border-gray-300 rounded-md shadow-sm p-2"
+                        className="w-full border border-gray-300 rounded-md shadow-sm p-1.5 text-xs"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Contrôle 2</label>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">C2</label>
                       <input
                         type="number"
                         name="controle2"
@@ -917,11 +983,11 @@ export default function NotesEnseignant() {
                         onChange={handleInputChange}
                         min="0"
                         max="20"
-                        className="w-full border border-gray-300 rounded-md shadow-sm p-2"
+                        className="w-full border border-gray-300 rounded-md shadow-sm p-1.5 text-xs"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Examen</label>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Exam</label>
                       <input
                         type="number"
                         name="examen"
@@ -929,15 +995,15 @@ export default function NotesEnseignant() {
                         onChange={handleInputChange}
                         min="0"
                         max="20"
-                        className="w-full border border-gray-300 rounded-md shadow-sm p-2"
+                        className="w-full border border-gray-300 rounded-md shadow-sm p-1.5 text-xs"
                       />
                     </div>
                   </div>
                   
-                  <div className="flex justify-between items-center bg-blue-50 p-3 rounded-lg">
+                  <div className="flex justify-between items-center bg-blue-50 p-1.5 sm:p-2 rounded-lg">
                     <div>
-                      <span className="text-sm font-medium">Moyenne: </span>
-                      <span className="font-semibold text-blue-700">
+                      <span className="text-xs font-medium">Moyenne: </span>
+                      <span className="font-semibold text-blue-700 text-xs">
                         {calculateMoyenne(
                           newStudent.controle1,
                           newStudent.controle2,
@@ -946,8 +1012,8 @@ export default function NotesEnseignant() {
                       </span>
                     </div>
                     <div>
-                      <span className="text-sm font-medium">Statut: </span>
-                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                      <span className="text-xs font-medium">Statut: </span>
+                      <span className={`px-1.5 py-0.5 text-xs font-semibold rounded-full ${
                         calculateMoyenne(
                           newStudent.controle1,
                           newStudent.controle2,
@@ -969,10 +1035,10 @@ export default function NotesEnseignant() {
                   </div>
                   
                   <button
-                    className="w-full bg-blue-700 text-white py-2 rounded-lg hover:bg-blue-800 transition-colors mt-2 flex items-center justify-center"
+                    className="w-full bg-blue-700 text-white py-1.5 rounded-lg hover:bg-blue-800 transition-colors mt-1 flex items-center justify-center text-xs sm:text-sm"
                     onClick={handleAddStudent}
                   >
-                    <i className="fa-solid fa-user-plus mr-2"></i>
+                    <i className="fa-solid fa-user-plus mr-1"></i>
                     Ajouter note
                   </button>
                 </div>

@@ -69,7 +69,7 @@ export default function GestionEnseignants() {
     if (savedEnseignants) {
       setEnseignants(JSON.parse(savedEnseignants));
     } else {
-      // Données par défaut avec le design original
+      // Données par défaut
       const defaultEnseignants: Enseignant[] = [
         { 
           id: '1', 
@@ -208,7 +208,7 @@ export default function GestionEnseignants() {
   return (
     <RouteGuard roles={['responsable']}>
       <div className="flex h-screen bg-gray-50">
-        {/* Mobile sidebar overlay */}
+        {/* Overlay pour mobile */}
         {sidebarOpen && (
           <div 
             className="fixed inset-0 z-10 bg-black bg-opacity-50 md:hidden" 
@@ -216,7 +216,7 @@ export default function GestionEnseignants() {
           ></div>
         )}
 
-        {/* Sidebar - Design original conservé */}
+        {/* Barre latérale */}
         <aside 
           className={`fixed left-0 top-0 z-20 h-full w-64 bg-blue-800 text-white transition-transform duration-300 ease-in-out md:static md:translate-x-0 ${
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
@@ -266,18 +266,31 @@ export default function GestionEnseignants() {
           </div>
         </aside>
 
-        {/* Main content - Design original conservé */}
+        {/* Contenu principal */}
         <div className="flex flex-1 flex-col overflow-hidden">
-          {/* Header - Design original conservé */}
+          {/* En-tête */}
           <header className="bg-white shadow-sm">
             <div className="flex items-center justify-between px-4 py-4 sm:px-6">
               <div className="flex items-center">
+                {/* Bouton hamburger pour les petites écrans */}
                 <button
                   className="mr-2 text-gray-500 hover:text-gray-600 md:hidden"
                   onClick={toggleSidebar}
                   aria-label="Toggle sidebar"
                 >
-                  <i className="fa-solid fa-bars"></i>
+                  <svg 
+                    className="h-6 w-6" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M4 6h16M4 12h16M4 18h16" 
+                    />
+                  </svg>
                 </button>
                 <h1 className="text-lg font-semibold text-gray-800">Gestion des enseignants</h1>
               </div>
@@ -293,7 +306,7 @@ export default function GestionEnseignants() {
             </div>
           </header>
 
-          {/* Content - Design original conservé avec ajout des fonctionnalités */}
+          {/* Contenu */}
           <main className="flex-1 overflow-y-auto p-6">
             <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div className="w-full md:w-96">
@@ -320,7 +333,7 @@ export default function GestionEnseignants() {
               </button>
             </div>
 
-            {/* Tableau des enseignants - Design original avec ajout de la colonne Photo */}
+            {/* Tableau des enseignants */}
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
@@ -397,7 +410,7 @@ export default function GestionEnseignants() {
           </main>
         </div>
 
-        {/* Modal pour ajouter/modifier un enseignant - Design cohérent avec l'original */}
+        {/* Modal pour ajouter/modifier un enseignant */}
         {modalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg w-full max-w-2xl">

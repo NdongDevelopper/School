@@ -23,13 +23,13 @@ interface Etudiant {
 const downloadFile = (content: string, filename: string, contentType: string) => {
   const blob = new Blob([content], { type: contentType });
   const url = URL.createObjectURL(blob);
-  
+
   const a = document.createElement('a');
   a.href = url;
   a.download = filename;
   document.body.appendChild(a);
   a.click();
-  
+
   // Nettoyer
   setTimeout(() => {
     document.body.removeChild(a);
@@ -45,8 +45,9 @@ export default function DeliberationsEnseignant() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const itemsPerPage = 5;
-  
+
   // Niveaux académiques
   const niveauxAcademiques = ['L1', 'L2', 'L3', 'M1', 'M2'];
 
@@ -64,25 +65,25 @@ export default function DeliberationsEnseignant() {
     const pdfContent = `
       Bulletin de Notes
       =================
-      
+
       Université: Université Internationale de Rabat
       Faculté: Faculté d'Informatique
-      
+
       Étudiant: ${etudiant.nom}
       Numéro: ${etudiant.numero}
       Spécialité: ${etudiant.specialite}
       Niveau: ${etudiant.niveau}
-      
+
       Moyenne Générale: ${etudiant.moyenne.toFixed(2)}/20
       Statut: ${etudiant.statut}
       Mention: ${etudiant.mention || 'Aucune'}
-      
+
       Décision du Jury: ${etudiant.statut === 'Admis' ? 'Admis' : 'Non Admis'}
-      
+
       Fait à Rabat, le ${new Date().toLocaleDateString()}
       Le Directeur des Études
     `;
-    
+
     downloadFile(pdfContent, `bulletin-${etudiant.numero}.txt`, 'text/plain');
   };
 
@@ -90,35 +91,35 @@ export default function DeliberationsEnseignant() {
   const exporterResultats = () => {
     // Création d'un CSV fictif
     let csvContent = "Nom,Numéro,Moyenne,Statut,Mention,Spécialité,Niveau\n";
-    
+
     etudiants.forEach(etudiant => {
       csvContent += `${etudiant.nom},${etudiant.numero},${etudiant.moyenne.toFixed(2)},${etudiant.statut},${etudiant.mention},${etudiant.specialite},${etudiant.niveau}\n`;
     });
-    
+
     downloadFile(csvContent, `resultats-${niveau}-${user?.nomSpecialite}.csv`, 'text/csv');
   };
 
   useEffect(() => {
     setLoading(true);
-    
+
     // Simuler un chargement
     setTimeout(() => {
       // Charger les données depuis le localStorage
       const loadStudents = () => {
         if (!user?.nomSpecialite) return [];
-        
+
         const key = `notes_${user.nomSpecialite}_${niveau}`;
         const savedStudents = localStorage.getItem(key);
-        
+
         if (savedStudents) {
           const students = JSON.parse(savedStudents);
-          
+
           // Convertir les données pour les délibérations
           const etudiantsAvecStatut = students.map((etudiant: any) => {
             let statut = "Admis";
             if (etudiant.moyenne < 10) statut = "Redouble";
             else if (etudiant.moyenne < 12) statut = "Rattrapage";
-            
+
             return {
               id: etudiant.id,
               numero: etudiant.numero,
@@ -131,14 +132,14 @@ export default function DeliberationsEnseignant() {
               niveau
             };
           });
-          
+
           return etudiantsAvecStatut;
         } else {
           // Charger les données initiales si rien n'est trouvé
           return getInitialData();
         }
       };
-      
+
       const data = loadStudents();
       setEtudiants(data);
       setLoading(false);
@@ -186,7 +187,7 @@ export default function DeliberationsEnseignant() {
       let statut = "Admis";
       if (etudiant.moyenne < 10) statut = "Redouble";
       else if (etudiant.moyenne < 12) statut = "Rattrapage";
-      
+
       return {
         ...etudiant,
         statut,
@@ -208,7 +209,7 @@ export default function DeliberationsEnseignant() {
   }, { admis: 0, rattrapage: 0, redouble: 0, total: etudiants.length });
 
   // Filtrage des étudiants
-  const filteredEtudiants = etudiants.filter(e => 
+  const filteredEtudiants = etudiants.filter(e =>
     e.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
     e.numero.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -224,8 +225,15 @@ export default function DeliberationsEnseignant() {
   return (
     <RouteGuard roles={['enseignant']}>
       <div className="flex min-h-screen bg-gray-50">
+        {/* Overlay pour le menu mobile */}
+        {sidebarOpen && (
+          <div className="fixed inset-0 z-40 bg-black bg-opacity-50 sm:hidden" onClick={() => setSidebarOpen(false)}></div>
+        )}
+
         {/* Sidebar */}
-        <aside className="fixed left-0 top-0 h-full w-64 bg-blue-800 text-white shadow-lg z-40">
+        <aside className={`fixed left-0 top-0 h-full w-64 bg-blue-800 text-white shadow-lg z-40 transition-transform duration-300 sm:translate-x-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}>
           <div className="p-6 border-b border-blue-700">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
@@ -237,11 +245,11 @@ export default function DeliberationsEnseignant() {
               </div>
             </div>
           </div>
-          
+
           <nav className="p-4">
             <ul className="space-y-2">
               <li>
-                <Link href="/enseignant/dashboard">
+                <Link href="/enseignant/dashboard" onClick={() => setSidebarOpen(false)}>
                   <div className={`flex items-center space-x-3 p-3 rounded-lg ${isActive('/enseignant/dashboard') ? 'bg-blue-700 text-white' : 'text-blue-200 hover:bg-blue-700 hover:text-white'} transition-colors cursor-pointer`}>
                     <i className="fa-solid fa-calendar-days text-lg"></i>
                     <span>Emploi du temps</span>
@@ -249,7 +257,7 @@ export default function DeliberationsEnseignant() {
                 </Link>
               </li>
               <li>
-                <Link href="/enseignant/notes">
+                <Link href="/enseignant/notes" onClick={() => setSidebarOpen(false)}>
                   <div className={`flex items-center space-x-3 p-3 rounded-lg ${isActive('/enseignant/notes') ? 'bg-blue-700 text-white' : 'text-blue-200 hover:bg-blue-700 hover:text-white'} transition-colors cursor-pointer`}>
                     <i className="fa-solid fa-file-lines text-lg"></i>
                     <span>Notes des Étudiants</span>
@@ -257,7 +265,7 @@ export default function DeliberationsEnseignant() {
                 </Link>
               </li>
               <li>
-                <Link href="/enseignant/absences">
+                <Link href="/enseignant/absences" onClick={() => setSidebarOpen(false)}>
                   <div className={`flex items-center space-x-3 p-3 rounded-lg ${isActive('/enseignant/absences') ? 'bg-blue-700 text-white' : 'text-blue-200 hover:bg-blue-700 hover:text-white'} transition-colors cursor-pointer`}>
                     <i className="fa-solid fa-user-xmark text-lg"></i>
                     <span>Absences</span>
@@ -265,7 +273,7 @@ export default function DeliberationsEnseignant() {
                 </Link>
               </li>
               <li>
-                <Link href="/enseignant/deliberations">
+                <Link href="/enseignant/deliberations" onClick={() => setSidebarOpen(false)}>
                   <div className={`flex items-center space-x-3 p-3 rounded-lg ${isActive('/enseignant/deliberations') ? 'bg-blue-700 text-white' : 'text-blue-200 hover:bg-blue-700 hover:text-white'} transition-colors cursor-pointer`}>
                     <i className="fa-solid fa-clipboard-check text-lg"></i>
                     <span>Délibérations</span>
@@ -274,13 +282,13 @@ export default function DeliberationsEnseignant() {
               </li>
             </ul>
           </nav>
-          
+
           <div className="absolute bottom-0 w-64 p-4 border-t border-blue-600">
             <div className="flex items-center space-x-3">
-              <img 
-                src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg" 
-                alt="Professeur" 
-                className="w-8 h-8 rounded-full" 
+              <img
+                src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg"
+                alt="Professeur"
+                className="w-8 h-8 rounded-full"
               />
               <div>
                 <p className="text-sm font-medium">{user?.username}</p>
@@ -290,37 +298,48 @@ export default function DeliberationsEnseignant() {
           </div>
         </aside>
 
-        <div className="flex-1 flex flex-col ml-64">
+        <div className="flex-1 flex flex-col sm:ml-64">
           {/* Header */}
-          <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
-              <div className="mb-4 md:mb-0">
-                <h1 className="text-2xl font-bold text-gray-900">Délibérations</h1>
-                <p className="text-gray-600 text-sm">Résultats des examens par classe</p>
+          <header className="bg-white shadow-sm border-b border-gray-200 px-4 sm:px-6 py-4">
+            <div className="flex items-center justify-between md:flex-row md:items-center">
+              {/* Conteneur pour le bouton et le titre */}
+              <div className="flex items-center gap-4"> {/* Utilisation de flex et gap pour l'alignement */}
+                {/* Bouton menu mobile - NON FIXÉ MAINTENANT */}
+                <button
+                  className="p-2 bg-blue-700 text-white rounded-lg sm:hidden"
+                  onClick={() => setSidebarOpen(!sidebarOpen)}
+                >
+                  <i className="fa-solid fa-bars text-lg"></i>
+                </button>
+                <div className=""> {/* Pas besoin de marge ici, le gap s'en charge */}
+                  <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Délibérations</h1>
+                  <p className="text-gray-600 text-sm">Résultats des examens par classe</p>
+                </div>
               </div>
-              <div className="flex items-center space-x-4">
-                <div className="text-right">
+
+              <div className="flex items-center space-x-4 mt-4 md:mt-0"> {/* Ajout de marge supérieure pour mobile si flex-col*/}
+                <div className="text-right hidden sm:block">
                   <p className="text-sm font-medium text-gray-900">Année Académique</p>
                   <p className="text-sm text-gray-600">2023-2024</p>
                 </div>
-                <img 
-                  src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg" 
-                  alt="Profile" 
-                  className="w-10 h-10 rounded-full"
+                <img
+                  src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg"
+                  alt="Profile"
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full"
                 />
               </div>
             </div>
           </header>
 
           {/* Class Tabs */}
-          <div className="bg-white border-b border-gray-200 px-6">
-            <div className="flex flex-wrap gap-2 py-4">
+          <div className="bg-white border-b border-gray-200 px-2 sm:px-6">
+            <div className="flex flex-wrap gap-2 py-4 overflow-x-auto">
               {niveauxAcademiques.map((niv) => (
                 <button
                   key={niv}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium ${
-                    niveau === niv 
-                      ? 'bg-blue-700 text-white' 
+                  className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium ${
+                    niveau === niv
+                      ? 'bg-blue-700 text-white'
                       : 'bg-white text-blue-700 border border-blue-700 hover:bg-blue-50'
                   }`}
                   onClick={() => setNiveau(niv)}
@@ -332,53 +351,53 @@ export default function DeliberationsEnseignant() {
           </div>
 
           {/* Content Area */}
-          <div className="p-4 md:p-6 flex-1">
+          <div className="p-2 sm:p-4 md:p-6 flex-1">
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
+              <div className="bg-white rounded-lg shadow-sm p-2 sm:p-4 border border-gray-200">
                 <div className="flex items-center">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <i className="fa-solid fa-user-check text-green-600 text-xl"></i>
+                  <div className="p-1 sm:p-2 bg-green-100 rounded-lg">
+                    <i className="fa-solid fa-user-check text-green-600 text-lg"></i>
                   </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Admis</p>
-                    <p className="text-xl font-bold text-gray-900">{stats.admis}</p>
+                  <div className="ml-2 sm:ml-4">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">Admis</p>
+                    <p className="text-lg sm:text-xl font-bold text-gray-900">{stats.admis}</p>
                   </div>
                 </div>
               </div>
-              
-              <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+
+              <div className="bg-white rounded-lg shadow-sm p-2 sm:p-4 border border-gray-200">
                 <div className="flex items-center">
-                  <div className="p-2 bg-red-100 rounded-lg">
-                    <i className="fa-solid fa-user-xmark text-red-600 text-xl"></i>
+                  <div className="p-1 sm:p-2 bg-red-100 rounded-lg">
+                    <i className="fa-solid fa-user-xmark text-red-600 text-lg"></i>
                   </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Échec</p>
-                    <p className="text-xl font-bold text-gray-900">{stats.redouble}</p>
+                  <div className="ml-2 sm:ml-4">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">Échec</p>
+                    <p className="text-lg sm:text-xl font-bold text-gray-900">{stats.redouble}</p>
                   </div>
                 </div>
               </div>
-              
-              <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+
+              <div className="bg-white rounded-lg shadow-sm p-2 sm:p-4 border border-gray-200">
                 <div className="flex items-center">
-                  <div className="p-2 bg-yellow-100 rounded-lg">
-                    <i className="fa-solid fa-clock text-yellow-600 text-xl"></i>
+                  <div className="p-1 sm:p-2 bg-yellow-100 rounded-lg">
+                    <i className="fa-solid fa-clock text-yellow-600 text-lg"></i>
                   </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Rattrapage</p>
-                    <p className="text-xl font-bold text-gray-900">{stats.rattrapage}</p>
+                  <div className="ml-2 sm:ml-4">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">Rattrapage</p>
+                    <p className="text-lg sm:text-xl font-bold text-gray-900">{stats.rattrapage}</p>
                   </div>
                 </div>
               </div>
-              
-              <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+
+              <div className="bg-white rounded-lg shadow-sm p-2 sm:p-4 border border-gray-200">
                 <div className="flex items-center">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <i className="fa-solid fa-users text-blue-600 text-xl"></i>
+                  <div className="p-1 sm:p-2 bg-blue-100 rounded-lg">
+                    <i className="fa-solid fa-users text-blue-600 text-lg"></i>
                   </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Total</p>
-                    <p className="text-xl font-bold text-gray-900">{stats.total}</p>
+                  <div className="ml-2 sm:ml-4">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">Total</p>
+                    <p className="text-lg sm:text-xl font-bold text-gray-900">{stats.total}</p>
                   </div>
                 </div>
               </div>
@@ -386,87 +405,90 @@ export default function DeliberationsEnseignant() {
 
             {/* Results Table */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-              <div className="p-4 md:p-6 border-b border-gray-200">
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                  <h3 className="text-lg font-medium text-gray-900">
+              <div className="p-3 sm:p-4 md:p-6 border-b border-gray-200">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                  <h3 className="text-base sm:text-lg font-medium text-gray-900">
                     Résultats {niveau.startsWith('L') ? 'Licence' : 'Master'} {niveau.substring(1)} - {user?.nomSpecialite}
                   </h3>
-                  <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                    <div className="relative">
-                      <input 
-                        type="text" 
-                        placeholder="Rechercher étudiant..." 
-                        className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-700 focus:border-transparent w-full"
+                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                    <div className="relative w-full sm:w-48">
+                      <input
+                        type="text"
+                        placeholder="Rechercher..."
+                        className="pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-700 focus:border-transparent w-full"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                       />
-                      <i className="fa-solid fa-search absolute left-3 top-3 text-gray-400"></i>
+                      <i className="fa-solid fa-search absolute left-3 top-2.5 text-gray-400"></i>
                     </div>
-                    <button 
-                      className="px-4 py-2 bg-blue-700 text-white rounded-lg text-sm font-medium hover:bg-blue-800 transition-colors flex items-center justify-center"
+                    <button
+                      className="px-3 py-2 text-sm sm:text-base bg-blue-700 text-white rounded-lg font-medium hover:bg-blue-800 transition-colors flex items-center justify-center"
                       onClick={exporterResultats}
                     >
-                      <i className="fa-solid fa-download mr-2"></i>Exporter
+                      <i className="fa-solid fa-download mr-1 sm:mr-2"></i>
+                      <span className="hidden sm:inline">Exporter</span>
+                      <span className="sm:hidden">Export</span>
                     </button>
                   </div>
                 </div>
               </div>
-              
+
               {loading ? (
-                <div className="p-8 flex flex-col items-center justify-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
-                  <p className="text-gray-600">Chargement des résultats...</p>
+                <div className="p-6 sm:p-8 flex flex-col items-center justify-center">
+                  <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-t-2 border-b-2 border-blue-500 mb-3 sm:mb-4"></div>
+                  <p className="text-gray-600 text-sm sm:text-base">Chargement des résultats...</p>
                 </div>
               ) : (
                 <>
                   <div className="overflow-x-auto">
-                    <table className="w-full min-w-max">
+                    {/* Tableau pour écrans larges */}
+                    <table className="w-full min-w-max hidden sm:table">
                       <thead className="bg-gray-50">
                         <tr>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Étudiant</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Numéro</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Note/20</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mention</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                          <th className="px-3 py-2 sm:px-4 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Étudiant</th>
+                          <th className="px-3 py-2 sm:px-4 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Numéro</th>
+                          <th className="px-3 py-2 sm:px-4 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Note/20</th>
+                          <th className="px-3 py-2 sm:px-4 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mention</th>
+                          <th className="px-3 py-2 sm:px-4 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                          <th className="px-3 py-2 sm:px-4 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
                         {currentEtudiants.length > 0 ? (
                           currentEtudiants.map((etudiant) => (
                             <tr key={etudiant.id} className="hover:bg-gray-50">
-                              <td className="px-4 py-3 whitespace-nowrap">
+                              <td className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap">
                                 <div className="flex items-center">
-                                  <img 
-                                    src={etudiant.imageUrl} 
-                                    alt={etudiant.nom} 
-                                    className="w-8 h-8 rounded-full mr-3 object-cover" 
+                                  <img
+                                    src={etudiant.imageUrl}
+                                    alt={etudiant.nom}
+                                    className="w-8 h-8 rounded-full mr-2 sm:mr-3 object-cover"
                                   />
                                   <span className="text-sm font-medium text-gray-900">{etudiant.nom}</span>
                                 </div>
                               </td>
-                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                              <td className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap text-sm text-gray-900">
                                 {etudiant.numero}
                               </td>
-                              <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                              <td className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap text-sm font-medium text-gray-900">
                                 {etudiant.moyenne.toFixed(1)}
                               </td>
-                              <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                              <td className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap text-sm text-gray-900">
                                 {etudiant.mention}
                               </td>
-                              <td className="px-4 py-3 whitespace-nowrap">
+                              <td className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap">
                                 <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                                  etudiant.statut === "Admis" 
-                                    ? 'bg-green-100 text-green-800' 
+                                  etudiant.statut === "Admis"
+                                    ? 'bg-green-100 text-green-800'
                                     : etudiant.statut === "Rattrapage"
-                                      ? 'bg-yellow-100 text-yellow-800' 
+                                      ? 'bg-yellow-100 text-yellow-800'
                                       : 'bg-red-100 text-red-800'
                                 }`}>
                                   {etudiant.statut}
                                 </span>
                               </td>
-                              <td className="px-4 py-3 whitespace-nowrap">
-                                <button 
+                              <td className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap">
+                                <button
                                   className="text-blue-600 hover:text-blue-800 flex items-center text-sm"
                                   onClick={() => genererBulletin(etudiant)}
                                   title="Télécharger le bulletin"
@@ -485,46 +507,105 @@ export default function DeliberationsEnseignant() {
                         )}
                       </tbody>
                     </table>
+
+                    {/* Liste pour écrans mobiles */}
+                    <div className="sm:hidden">
+                      {currentEtudiants.length > 0 ? (
+                        currentEtudiants.map((etudiant) => (
+                          <div key={etudiant.id} className="border-b border-gray-200 p-3">
+                            <div className="flex justify-between items-start">
+                              <div className="flex items-center">
+                                <img
+                                  src={etudiant.imageUrl}
+                                  alt={etudiant.nom}
+                                  className="w-10 h-10 rounded-full mr-3 object-cover"
+                                />
+                                <div>
+                                  <div className="font-medium text-gray-900">{etudiant.nom}</div>
+                                  <div className="text-sm text-gray-500">{etudiant.numero}</div>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <div className="font-medium text-gray-900">{etudiant.moyenne.toFixed(1)}/20</div>
+                                <div className="text-sm">
+                                  <span className={`px-1.5 py-0.5 text-xs font-medium rounded-full ${
+                                    etudiant.statut === "Admis"
+                                      ? 'bg-green-100 text-green-800'
+                                      : etudiant.statut === "Rattrapage"
+                                        ? 'bg-yellow-100 text-yellow-800'
+                                        : 'bg-red-100 text-red-800'
+                                  }`}>
+                                    {etudiant.statut}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="mt-2 flex justify-between items-center">
+                              <div>
+                                {etudiant.mention && (
+                                  <span className="text-sm text-gray-700">Mention: {etudiant.mention}</span>
+                                )}
+                              </div>
+                              <button
+                                className="text-blue-600 hover:text-blue-800 flex items-center text-sm"
+                                onClick={() => genererBulletin(etudiant)}
+                              >
+                                <i className="fa-solid fa-download mr-1"></i> PDF
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="px-4 py-6 text-center text-gray-500">
+                          Aucun étudiant trouvé
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  
-                  <div className="p-4 md:p-6 border-t border-gray-200">
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                      <p className="text-sm text-gray-700">
+
+                  <div className="p-3 sm:p-4 md:p-6 border-t border-gray-200">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+                      <p className="text-xs sm:text-sm text-gray-700">
                         Affichage de {startIndex + 1} à {Math.min(startIndex + itemsPerPage, filteredEtudiants.length)} sur {filteredEtudiants.length} résultats
                       </p>
-                      <div className="flex flex-wrap gap-2">
-                        <button 
-                          className={`px-3 py-1 border border-gray-300 rounded text-sm ${
+                      <div className="flex flex-wrap gap-1 sm:gap-2 items-center">
+                        <button
+                          className={`px-2 py-1 text-xs sm:text-sm ${
                             currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-50'
                           }`}
                           disabled={currentPage === 1}
                           onClick={() => setCurrentPage(currentPage - 1)}
                         >
-                          Précédent
+                          <i className="fa-solid fa-chevron-left mr-1"></i>
+                          <span className="hidden sm:inline">Précédent</span>
                         </button>
-                        
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                          <button
-                            key={page}
-                            className={`px-3 py-1 rounded text-sm ${
-                              currentPage === page 
-                                ? 'bg-blue-700 text-white' 
-                                : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
-                            }`}
-                            onClick={() => setCurrentPage(page)}
-                          >
-                            {page}
-                          </button>
-                        ))}
-                        
-                        <button 
-                          className={`px-3 py-1 border border-gray-300 rounded text-sm ${
+
+                        <div className="flex gap-1">
+                          {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                            <button
+                              key={page}
+                              className={`w-7 h-7 text-xs sm:text-sm flex items-center justify-center rounded ${
+                                currentPage === page
+                                  ? 'bg-blue-700 text-white'
+                                  : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
+                              }`}
+                              onClick={() => setCurrentPage(page)}
+                            >
+                              {page}
+                            </button>
+                          ))}
+                        </div>
+
+                        <button
+                          className={`px-2 py-1 text-xs sm:text-sm ${
                             currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-gray-700 hover:bg-gray-50'
                           }`}
                           disabled={currentPage === totalPages}
                           onClick={() => setCurrentPage(currentPage + 1)}
                         >
-                          Suivant
+                          <span className="hidden sm:inline">Suivant</span>
+                          <i className="fa-solid fa-chevron-right ml-1"></i>
                         </button>
                       </div>
                     </div>

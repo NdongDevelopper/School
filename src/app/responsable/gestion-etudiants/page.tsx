@@ -52,6 +52,7 @@ export default function GestionEtudiants() {
       label: 'Gestion Étudiants', 
       icon: 'fa-users' 
     },
+    
     { 
       href: '/responsable/deliberations', 
       label: 'Délibérations', 
@@ -303,7 +304,7 @@ export default function GestionEtudiants() {
           }`}
         >
           <div className="flex h-full flex-col">
-            <div className="p-6 border-b border-indigo-600">
+            <div className="p-4 sm:p-6 border-b border-indigo-600">
               <h2 className="text-xl font-bold">IDA - Filière</h2>
               <p className="text-blue-200 text-sm mt-1">Responsable de Filière</p>
             </div>
@@ -313,13 +314,13 @@ export default function GestionEtudiants() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className={`flex items-center rounded-lg px-6 py-3 text-blue-200 hover:bg-indigo-700 hover:text-white ${
+                      className={`flex items-center rounded-lg px-4 sm:px-6 py-3 text-blue-200 hover:bg-indigo-700 hover:text-white ${
                         pathname === link.href ? 'bg-indigo-700 text-white' : ''
                       }`}
                       onClick={() => setSidebarOpen(false)}
                     >
                       <i className={`fa-solid ${link.icon} mr-3`}></i>
-                      {link.label}
+                      <span className="text-sm sm:text-base">{link.label}</span>
                     </Link>
                   </li>
                 ))}
@@ -331,7 +332,7 @@ export default function GestionEtudiants() {
                   <img 
                     src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg" 
                     alt="Profile" 
-                    className="w-10 h-10 rounded-full" 
+                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-full" 
                   />
                   <div className="ml-3">
                     <div className="text-sm font-medium">{user?.username}</div>
@@ -353,42 +354,51 @@ export default function GestionEtudiants() {
         {/* Main content */}
         <div className="flex flex-1 flex-col overflow-hidden">
           {/* Header */}
-          <header className="bg-white border-b border-gray-200 px-8 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Gestion des Étudiants</h1>
-                <p className="text-gray-600">Formation Développement Web & Mobile</p>
+          <header className="bg-white border-b border-gray-300 px-4 sm:px-6 py-3 sm:py-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-3">
+                {/* Bouton hamburger visible uniquement sur mobile */}
+                <button 
+                  onClick={toggleSidebar}
+                  className="md:hidden text-gray-500 hover:text-gray-700"
+                >
+                  <i className="fa-solid fa-bars"></i>
+                </button>
+                <div>
+                  <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Gestion des Étudiants</h1>
+                  <p className="text-gray-600 text-sm">Formation Développement Web & Mobile</p>
+                </div>
               </div>
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto">
                 <button 
                   onClick={() => {
                     setEditingEtudiant(null);
                     setModalOpen(true);
                   }}
-                  className="bg-indigo-800 text-white px-4 py-2 rounded-lg hover:bg-indigo-900 transition-colors"
+                  className="bg-indigo-800 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-indigo-900 transition-colors flex items-center justify-center w-full sm:w-auto"
                 >
                   <i className="fa-solid fa-plus mr-2"></i>
-                  Ajouter Étudiant
+                  <span className="text-sm sm:text-base">Ajouter Étudiant</span>
                 </button>
                 <img 
                   src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg" 
                   alt="Profile" 
-                  className="w-10 h-10 rounded-full" 
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full hidden sm:block" 
                 />
               </div>
             </div>
           </header>
 
           {/* Content */}
-          <main className="flex-1 overflow-y-auto p-8">
+          <main className="flex-1 overflow-y-auto p-4 sm:p-6">
             {/* Filters Section */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-300 p-4 sm:p-6 mb-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Filtres et Recherche</h3>
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                <div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4">
+                <div className="md:col-span-1">
                   <label className="block text-sm font-medium text-gray-700 mb-2">Niveau</label>
                   <select
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-800 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-800 focus:border-transparent text-sm sm:text-base"
                     value={niveau}
                     onChange={(e) => setNiveau(e.target.value)}
                   >
@@ -400,10 +410,10 @@ export default function GestionEtudiants() {
                     <option>M2</option>
                   </select>
                 </div>
-                <div>
+                <div className="md:col-span-1">
                   <label className="block text-sm font-medium text-gray-700 mb-2">Spécialité</label>
                   <select
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-800 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-800 focus:border-transparent text-sm sm:text-base"
                     value={specialite}
                     onChange={(e) => setSpecialite(e.target.value)}
                   >
@@ -413,10 +423,10 @@ export default function GestionEtudiants() {
                     <option>CD</option>
                   </select>
                 </div>
-                <div>
+                <div className="md:col-span-1">
                   <label className="block text-sm font-medium text-gray-700 mb-2">Promotion</label>
                   <select
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-800 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-800 focus:border-transparent text-sm sm:text-base"
                     value={promotion}
                     onChange={(e) => setPromotion(e.target.value)}
                   >
@@ -427,10 +437,10 @@ export default function GestionEtudiants() {
                     <option>2021-2022</option>
                   </select>
                 </div>
-                <div>
+                <div className="md:col-span-1">
                   <label className="block text-sm font-medium text-gray-700 mb-2">Groupe</label>
                   <select
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-800 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-800 focus:border-transparent text-sm sm:text-base"
                     value={groupe}
                     onChange={(e) => setGroupe(e.target.value)}
                   >
@@ -440,12 +450,12 @@ export default function GestionEtudiants() {
                     <option>Groupe C</option>
                   </select>
                 </div>
-                <div>
+                <div className="md:col-span-1">
                   <label className="block text-sm font-medium text-gray-700 mb-2">Recherche</label>
                   <input
                     type="text"
                     placeholder="Nom ou email..."
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-800 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-800 focus:border-transparent text-sm sm:text-base"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -454,9 +464,9 @@ export default function GestionEtudiants() {
             </div>
 
             {/* Students Table */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-              <div className="p-6 border-b border-gray-200">
-                <div className="flex items-center justify-between">
+            <div className="bg-white rounded-lg shadow-sm border border-gray-300 overflow-hidden">
+              <div className="p-4 sm:p-6 border-b border-gray-300">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <h3 className="text-lg font-semibold text-gray-900">Liste des Étudiants</h3>
                   <div className="flex items-center space-x-3">
                     <span className="text-sm text-gray-600">{filteredEtudiants.length} étudiants</span>
@@ -468,35 +478,35 @@ export default function GestionEtudiants() {
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full">
+                <table className="w-full min-w-[800px]">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Étudiant</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Niveau</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Spécialité</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Groupe</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Compétences</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-300">Étudiant</th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-300">Niveau</th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-300">Spécialité</th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-300">Groupe</th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-300">Compétences</th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-300">Statut</th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-300">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
+                  <tbody className="bg-white divide-y divide-gray-300">
                     {etudiantsToShow.map((etudiant) => (
-                      <tr key={etudiant.id}>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                      <tr key={etudiant.id} className="hover:bg-gray-50">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap border-b border-gray-300">
                           <div className="flex items-center">
                             <img 
                               src={etudiant.imageUrl} 
                               alt="Student" 
-                              className="w-10 h-10 rounded-full mr-3" 
+                              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full mr-3" 
                             />
                             <div>
                               <div className="text-sm font-medium text-gray-900">{etudiant.nom}</div>
-                              <div className="text-sm text-gray-500">{etudiant.email}</div>
+                              <div className="text-xs sm:text-sm text-gray-500">{etudiant.email}</div>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap border-b border-gray-300">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                             etudiant.niveau === 'L1' ? 'bg-blue-100 text-blue-800' :
                             etudiant.niveau === 'L2' ? 'bg-purple-100 text-purple-800' :
@@ -507,14 +517,14 @@ export default function GestionEtudiants() {
                             {etudiant.niveau}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300">
                           {etudiant.specialite}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-300">
                           {etudiant.groupe}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex flex-wrap gap-1">
+                        <td className="px-4 sm:px-6 py-4 border-b border-gray-300">
+                          <div className="flex flex-wrap gap-1 max-w-[150px]">
                             {etudiant.competences.map((competence, idx) => (
                               <span 
                                 key={idx}
@@ -525,7 +535,7 @@ export default function GestionEtudiants() {
                             ))}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap border-b border-gray-300">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                             etudiant.statut === 'Actif' 
                               ? 'bg-green-100 text-green-800' 
@@ -534,7 +544,7 @@ export default function GestionEtudiants() {
                             {etudiant.statut}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium border-b border-gray-300">
                           <div className="flex space-x-2">
                             <button 
                               className="text-indigo-800 hover:text-indigo-900"
@@ -557,12 +567,12 @@ export default function GestionEtudiants() {
               </div>
 
               {/* Pagination */}
-              <div className="px-6 py-4 border-t border-gray-200">
-                <div className="flex items-center justify-between">
+              <div className="px-4 sm:px-6 py-4 border-t border-gray-300">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="text-sm text-gray-700">
                     Affichage de {startIndex + 1} à {endIndex} sur {filteredEtudiants.length} résultats
                   </div>
-                  <div className="flex space-x-2">
+                  <div className="flex space-x-1 sm:space-x-2">
                     <button 
                       className="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500"
                       onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
@@ -571,19 +581,59 @@ export default function GestionEtudiants() {
                       Précédent
                     </button>
                     
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                      <button
-                        key={page}
-                        className={`px-3 py-1 rounded text-sm ${
-                          currentPage === page 
-                            ? 'bg-indigo-800 text-white' 
-                            : 'border border-gray-300 text-gray-700'
-                        }`}
-                        onClick={() => setCurrentPage(page)}
-                      >
-                        {page}
-                      </button>
-                    ))}
+                    {totalPages <= 5 ? (
+                      Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                        <button
+                          key={page}
+                          className={`px-3 py-1 rounded text-sm ${
+                            currentPage === page 
+                              ? 'bg-indigo-800 text-white' 
+                              : 'border border-gray-300 text-gray-700'
+                          }`}
+                          onClick={() => setCurrentPage(page)}
+                        >
+                          {page}
+                        </button>
+                      ))
+                    ) : (
+                      <>
+                        {currentPage > 2 && (
+                          <button
+                            className="px-3 py-1 border border-gray-300 rounded text-sm text-gray-700"
+                            onClick={() => setCurrentPage(1)}
+                          >
+                            1
+                          </button>
+                        )}
+                        {currentPage > 3 && <span className="px-2 py-1">...</span>}
+                        {[
+                          currentPage - 1,
+                          currentPage,
+                          currentPage + 1
+                        ].filter(page => page >= 1 && page <= totalPages).map(page => (
+                          <button
+                            key={page}
+                            className={`px-3 py-1 rounded text-sm ${
+                              currentPage === page 
+                                ? 'bg-indigo-800 text-white' 
+                                : 'border border-gray-300 text-gray-700'
+                            }`}
+                            onClick={() => setCurrentPage(page)}
+                          >
+                            {page}
+                          </button>
+                        ))}
+                        {currentPage < totalPages - 2 && <span className="px-2 py-1">...</span>}
+                        {currentPage < totalPages - 1 && (
+                          <button
+                            className="px-3 py-1 border border-gray-300 rounded text-sm text-gray-700"
+                            onClick={() => setCurrentPage(totalPages)}
+                          >
+                            {totalPages}
+                          </button>
+                        )}
+                      </>
+                    )}
                     
                     <button 
                       className="px-3 py-1 border border-gray-300 rounded text-sm text-gray-700"
@@ -601,8 +651,8 @@ export default function GestionEtudiants() {
 
         {/* Add/Edit Student Modal */}
         {modalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-md mx-4 border border-gray-300">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 {editingEtudiant ? 'Modifier Étudiant' : 'Ajouter un Étudiant'}
               </h3>
@@ -610,7 +660,7 @@ export default function GestionEtudiants() {
                 <div className="flex justify-center">
                   <div className="relative">
                     <div 
-                      className="w-24 h-24 rounded-full bg-gray-200 border-2 border-dashed border-gray-300 cursor-pointer overflow-hidden"
+                      className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gray-200 border-2 border-dashed border-gray-300 cursor-pointer overflow-hidden"
                       onClick={triggerFileInput}
                     >
                       {imagePreview ? (
@@ -621,7 +671,7 @@ export default function GestionEtudiants() {
                         />
                       ) : (
                         <div className="flex items-center justify-center w-full h-full">
-                          <i className="fa-solid fa-user text-gray-400 text-3xl"></i>
+                          <i className="fa-solid fa-user text-gray-400 text-2xl sm:text-3xl"></i>
                         </div>
                       )}
                     </div>
@@ -647,7 +697,7 @@ export default function GestionEtudiants() {
                   <input 
                     type="text" 
                     name="nom"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-800 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-800 focus:border-transparent text-sm sm:text-base"
                     placeholder="Ex: Ahmed Benali"
                     required
                     defaultValue={editingEtudiant?.nom || ''}
@@ -658,19 +708,19 @@ export default function GestionEtudiants() {
                   <input 
                     type="email" 
                     name="email"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-800 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-800 focus:border-transparent text-sm sm:text-base"
                     placeholder="Ex: etudiant@uns.edu.sn"
                     required
                     defaultValue={editingEtudiant?.email || ''}
                   />
                   <p className="text-xs text-gray-500 mt-1">Doit être du format @uns.edu.sn</p>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Niveau*</label>
                     <select 
                       name="niveau"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-800 focus:border-transparent"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-800 focus:border-transparent text-sm sm:text-base"
                       required
                       defaultValue={editingEtudiant?.niveau || ''}
                     >
@@ -686,7 +736,7 @@ export default function GestionEtudiants() {
                     <label className="block text-sm font-medium text-gray-700 mb-1">Spécialité*</label>
                     <select 
                       name="specialite"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-800 focus:border-transparent"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-800 focus:border-transparent text-sm sm:text-base"
                       required
                       defaultValue={editingEtudiant?.specialite || ''}
                     >
@@ -697,12 +747,12 @@ export default function GestionEtudiants() {
                     </select>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Groupe*</label>
                     <select 
                       name="groupe"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-800 focus:border-transparent"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-800 focus:border-transparent text-sm sm:text-base"
                       required
                       defaultValue={editingEtudiant?.groupe || ''}
                     >
@@ -717,24 +767,24 @@ export default function GestionEtudiants() {
                     <input 
                       type="tel" 
                       name="telephone"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-800 focus:border-transparent"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-800 focus:border-transparent text-sm sm:text-base"
                       placeholder="Ex: 771234567"
                       required
                       defaultValue={editingEtudiant?.telephone || ''}
                     />
                   </div>
                 </div>
-                <div className="flex justify-end space-x-3 mt-6">
+                <div className="flex justify-end space-x-2 sm:space-x-3 mt-4 sm:mt-6">
                   <button 
                     type="button" 
-                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                    className="px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 text-sm sm:text-base"
                     onClick={() => setModalOpen(false)}
                   >
                     Annuler
                   </button>
                   <button 
                     type="submit" 
-                    className="px-4 py-2 bg-indigo-800 text-white rounded-lg hover:bg-indigo-900"
+                    className="px-3 sm:px-4 py-2 bg-indigo-800 text-white rounded-lg hover:bg-indigo-900 text-sm sm:text-base"
                   >
                     {editingEtudiant ? 'Mettre à jour' : 'Ajouter'}
                   </button>

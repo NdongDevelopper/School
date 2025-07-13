@@ -268,11 +268,11 @@ export default function NotesPage() {
     <RouteGuard roles={['etudiant']}>
       <div className="flex flex-col md:flex-row bg-gray-50 min-h-screen">
         <aside 
-          className={`fixed inset-y-0 left-0 w-64 bg-blue-600 text-white shadow-lg z-20 transform transition-transform duration-300 md:translate-x-0 md:static ${
+          className={`fixed inset-y-0 left-0 w-64 bg-blue-600 text-white shadow-lg z-20 transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static ${
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >
-          <div className="p-6 border-b border-blue-400">
+          <div className="p-4 md:p-6 border-b border-blue-400 flex justify-between items-center">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -288,11 +288,19 @@ export default function NotesPage() {
                 </p>
               </div>
             </div>
+            <button 
+              onClick={toggleSidebar}
+              className="md:hidden text-white"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
           <nav className="mt-6">
-            <ul className="space-y-2 px-4">
+            <ul className="space-y-2 px-2 md:px-4">
               <li>
-                <a href={`/${specialite}/tableau-bord`} className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-blue-500 transition-colors cursor-pointer">
+                <a href={`/${specialite}/tableau-bord`} className="flex items-center space-x-3 px-3 py-3 rounded-lg hover:bg-blue-500 transition-colors cursor-pointer">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                   </svg>
@@ -300,7 +308,7 @@ export default function NotesPage() {
                 </a>
               </li>
               <li>
-                <a href={`/${specialite}/cours`} className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-blue-500 transition-colors cursor-pointer">
+                <a href={`/${specialite}/cours`} className="flex items-center space-x-3 px-3 py-3 rounded-lg hover:bg-blue-500 transition-colors cursor-pointer">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                   </svg>
@@ -309,7 +317,7 @@ export default function NotesPage() {
               </li>
             
               <li>
-                <span className="flex items-center space-x-3 px-4 py-3 rounded-lg bg-blue-500 text-white font-medium cursor-pointer">
+                <span className="flex items-center space-x-3 px-3 py-3 rounded-lg bg-blue-500 text-white font-medium cursor-pointer">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
@@ -317,7 +325,7 @@ export default function NotesPage() {
                 </span>
               </li>
               <li>
-                <a href={`/${specialite}/absences`} className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-blue-500 transition-colors cursor-pointer">
+                <a href={`/${specialite}/absences`} className="flex items-center space-x-3 px-3 py-3 rounded-lg hover:bg-blue-500 transition-colors cursor-pointer">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
@@ -348,37 +356,51 @@ export default function NotesPage() {
           ></div>
         )}
 
-        <main className="flex-1 flex flex-col">
-          <header className="bg-white shadow-sm border-b border-gray-200 px-4 py-4 md:px-6 flex items-center justify-between">
-            <div>
-              <h1 className="text-xl md:text-2xl font-bold text-gray-900">
-                Notes et Évaluations - {getNomSpecialite(specialite)}
-              </h1>
-              <p className="text-gray-600">Niveau {niveau} - Année académique 2025</p>
-            </div>
-            <div className="flex items-center space-x-2 md:space-x-4">
-              <button 
-                onClick={handleDownloadBulletin}
-                className="px-3 py-2 md:px-4 md:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center text-sm md:text-base"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-                Télécharger le bulletin
-              </button>
+        <main className="flex-1 flex flex-col w-full overflow-hidden">
+          <header className="bg-white shadow-sm border-b border-gray-200 px-4 py-4 md:px-6">
+            <div className="flex flex-col w-full">
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center">
+                  <button 
+                    onClick={toggleSidebar}
+                    className="mr-3 text-gray-500 hover:text-gray-700 md:hidden"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                  </button>
+                  <div>
+                    <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">
+                      Notes et Évaluations
+                    </h1>
+                  </div>
+                </div>
+                <button 
+                  onClick={handleDownloadBulletin}
+                  className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center text-sm"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  <span className="hidden sm:inline">Télécharger</span>
+                </button>
+              </div>
+              <p className="text-gray-600 text-sm mt-1 w-full">
+                {getNomSpecialite(specialite)} - Niveau {niveau} - Année 2025
+              </p>
             </div>
           </header>
 
-          <div className="flex-1 p-4 md:p-6 overflow-auto">
+          <div className="flex-1 p-4 md:p-6 overflow-auto w-full">
             {reclamationSuccess && (
-              <div className="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
+              <div className="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
                 <span className="block sm:inline">
                   Votre réclamation a été soumise avec succès. Elle est maintenant en attente de traitement.
                 </span>
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 w-full">
               <SummaryCard 
                 title="Moyenne générale" 
                 value={summary.average} 
@@ -411,32 +433,33 @@ export default function NotesPage() {
               />
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200">
+            {/* Tableau pour écrans larges */}
+            <div className="hidden md:block bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden w-full">
+              <div className="px-4 py-3 md:px-6 md:py-4 border-b border-gray-200">
                 <h2 className="text-lg font-semibold text-gray-900">Détail des notes par matière</h2>
-                <p className="text-gray-600 mt-1">Semestre 1 - {getNomSpecialite(specialite)}</p>
+                <p className="text-gray-600 text-sm mt-1">Semestre 1 - {getNomSpecialite(specialite)}</p>
               </div>
 
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto w-full">
                 <table className="w-full min-w-full">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Matière
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Coefficient
+                      <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Coef
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Note
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Statut
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Crédits ECTS
+                      <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        ECTS
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
@@ -444,16 +467,16 @@ export default function NotesPage() {
                   <tbody className="divide-y divide-gray-200">
                     {notes.map((note) => (
                       <tr key={note.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <td className="px-3 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
                           {note.matiere}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-500">
                           {note.coef}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <td className="px-3 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
                           {note.note}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-3 py-3 whitespace-nowrap">
                           <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                             note.statut === "Validé" 
                               ? "bg-green-100 text-green-800" 
@@ -462,13 +485,13 @@ export default function NotesPage() {
                             {note.statut}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-500">
                           {note.ects}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <td className="px-3 py-3 whitespace-nowrap text-sm">
                           <button
                             onClick={() => handleOpenReclamation(note)}
-                            className="text-blue-600 hover:text-blue-900 font-medium"
+                            className="text-blue-600 hover:text-blue-900 font-medium text-sm"
                           >
                             Réclamer
                           </button>
@@ -480,27 +503,78 @@ export default function NotesPage() {
               </div>
             </div>
 
+            {/* Vue mobile avec cartes */}
+            <div className="md:hidden bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden w-full">
+              <div className="px-4 py-3 border-b border-gray-200">
+                <h2 className="text-lg font-semibold text-gray-900">Détail des notes par matière</h2>
+                <p className="text-gray-600 text-sm mt-1">Semestre 1 - {getNomSpecialite(specialite)}</p>
+              </div>
+
+              <div className="divide-y divide-gray-200">
+                {notes.map((note) => (
+                  <div key={note.id} className="p-4 hover:bg-gray-50">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="text-base font-medium text-gray-900">{note.matiere}</h3>
+                        <div className="mt-1 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                          <div className="flex items-center">
+                            <span className="text-gray-500">Coef:</span>
+                            <span className="ml-2 font-medium">{note.coef}</span>
+                          </div>
+                          <div className="flex items-center">
+                            <span className="text-gray-500">Note:</span>
+                            <span className="ml-2 font-medium">{note.note}</span>
+                          </div>
+                          <div className="flex items-center">
+                            <span className="text-gray-500">Statut:</span>
+                            <span className={`ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                              note.statut === "Validé" 
+                                ? "bg-green-100 text-green-800" 
+                                : "bg-red-100 text-red-800"
+                            }`}>
+                              {note.statut}
+                            </span>
+                          </div>
+                          <div className="flex items-center">
+                            <span className="text-gray-500">ECTS:</span>
+                            <span className="ml-2 font-medium">{note.ects}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleOpenReclamation(note)}
+                        className="text-blue-600 hover:text-blue-900 font-medium text-sm whitespace-nowrap ml-2"
+                      >
+                        Réclamer
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {reclamations.length > 0 && (
-              <div className="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-200">
+              <div className="mt-6 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden w-full">
+                <div className="px-4 py-3 md:px-6 md:py-4 border-b border-gray-200">
                   <h2 className="text-lg font-semibold text-gray-900">Mes réclamations</h2>
-                  <p className="text-gray-600 mt-1">Historique de vos réclamations concernant les notes</p>
+                  <p className="text-gray-600 text-sm mt-1">Historique de vos réclamations concernant les notes</p>
                 </div>
 
-                <div className="overflow-x-auto">
+                {/* Tableau pour écrans larges */}
+                <div className="hidden md:block overflow-x-auto w-full">
                   <table className="w-full min-w-full">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Matière
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Date
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Sujet
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Statut
                         </th>
                       </tr>
@@ -510,16 +584,16 @@ export default function NotesPage() {
                         const note = notes.find(n => n.id === reclamation.matiereId);
                         return (
                           <tr key={reclamation.id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <td className="px-3 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
                               {note ? note.matiere : "Matière inconnue"}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-500">
                               {reclamation.date}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-900">
                               {reclamation.sujet}
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            <td className="px-3 py-3 whitespace-nowrap">
                               <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                                 reclamation.statut === "Traité" 
                                   ? "bg-green-100 text-green-800" 
@@ -536,12 +610,50 @@ export default function NotesPage() {
                     </tbody>
                   </table>
                 </div>
+
+                {/* Vue mobile avec cartes */}
+                <div className="md:hidden divide-y divide-gray-200">
+                  {reclamations.map((reclamation) => {
+                    const note = notes.find(n => n.id === reclamation.matiereId);
+                    return (
+                      <div key={reclamation.id} className="p-4 hover:bg-gray-50">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h3 className="text-base font-medium text-gray-900">{note ? note.matiere : "Matière inconnue"}</h3>
+                            <div className="mt-1 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                              <div className="flex items-center">
+                                <span className="text-gray-500">Date:</span>
+                                <span className="ml-2 font-medium">{reclamation.date}</span>
+                              </div>
+                              <div className="flex items-center">
+                                <span className="text-gray-500">Sujet:</span>
+                                <span className="ml-2 font-medium">{reclamation.sujet}</span>
+                              </div>
+                              <div className="flex items-center">
+                                <span className="text-gray-500">Statut:</span>
+                                <span className={`ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                  reclamation.statut === "Traité" 
+                                    ? "bg-green-100 text-green-800" 
+                                    : reclamation.statut === "Rejeté"
+                                      ? "bg-red-100 text-red-800"
+                                      : "bg-yellow-100 text-yellow-800"
+                                }`}>
+                                  {reclamation.statut}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
 
-            <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4 w-full">
               <div className="flex">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500 mt-0.5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500 mt-0.5 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div>
@@ -622,10 +734,10 @@ function SummaryCard({ title, value, color, icon }: {
   icon: React.ReactNode;
 }) {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex items-center justify-between">
+    <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-200 flex items-center justify-between w-full">
       <div className="flex-1 min-w-0">
-        <h3 className="text-base md:text-lg font-semibold text-gray-900 truncate">{title}</h3>
-        <p className={`text-xl md:text-2xl font-bold text-${color} truncate`}>{value}</p>
+        <h3 className="text-sm md:text-base font-semibold text-gray-900 truncate">{title}</h3>
+        <p className={`text-lg md:text-xl font-bold text-${color} truncate`}>{value}</p>
       </div>
       <div className={`ml-4 w-10 h-10 md:w-12 md:h-12 bg-${color}-100 rounded-lg flex items-center justify-center flex-shrink-0`}>
         {icon}

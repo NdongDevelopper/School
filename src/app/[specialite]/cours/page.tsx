@@ -6,8 +6,6 @@ import { useParams } from 'next/navigation';
 import RouteGuard from '@/components/RouteGuard';
 import dynamic from 'next/dynamic';
 
-// Pas besoin de dynamic import ici, jsPDF sera importé dynamiquement dans les fonctions de génération PDF
-
 // Structure des données de cours
 type Cours = {
   id: string;
@@ -325,30 +323,42 @@ export default function CoursPage() {
         <main className="flex-1 flex flex-col">
           {/* Header */}
           <header className="bg-white shadow-sm border-b border-gray-200 px-4 py-4 md:px-6 flex items-center justify-between">
-            <div>
-              <h1 className="text-xl md:text-2xl font-bold text-gray-900">
-                Cours - {getNomSpecialite(specialite)}
-              </h1>
-              <p className="text-gray-600">Niveau {niveau} - Année académique 2025</p>
+            <div className="flex items-center">
+              {/* Hamburger menu for mobile */}
+              <button 
+                className="mr-3 md:hidden text-gray-600"
+                onClick={toggleSidebar}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold text-gray-900">
+                  Cours - {getNomSpecialite(specialite)}
+                </h1>
+                <p className="text-gray-600 hidden sm:block">Niveau {niveau} - Année académique 2025</p>
+              </div>
             </div>
             <div className="flex items-center space-x-2 md:space-x-4">
               <button 
                 onClick={handleDownloadProgram}
                 className="px-3 py-2 md:px-4 md:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center text-sm md:text-base"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1 md:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
-                Télécharger le programme
+                <span className="hidden sm:inline">Télécharger le programme</span>
+                <span className="sm:hidden">PDF</span>
               </button>
             </div>
           </header>
 
           <div className="flex-1 p-4 md:p-6 overflow-auto">
-            {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 mb-6">
+            {/* Summary Cards - responsive grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-6">
               <SummaryCard 
-                title="Total des cours" 
+                title="Total cours" 
                 value={summary.totalCours.toString()} 
                 color="blue-600" 
                 icon={
@@ -358,7 +368,7 @@ export default function CoursPage() {
                 }
               />
               <SummaryCard 
-                title="Volume horaire" 
+                title="Heures" 
                 value={summary.totalHeures} 
                 color="blue-600" 
                 icon={
@@ -368,7 +378,7 @@ export default function CoursPage() {
                 }
               />
               <SummaryCard 
-                title="Semestre 1" 
+                title="S1" 
                 value={summary.semestre1} 
                 color="blue-600" 
                 icon={
@@ -378,7 +388,7 @@ export default function CoursPage() {
                 }
               />
               <SummaryCard 
-                title="Semestre 2" 
+                title="S2" 
                 value={summary.semestre2} 
                 color="blue-600" 
                 icon={
@@ -390,19 +400,19 @@ export default function CoursPage() {
             </div>
 
             {/* Filtres par semestre */}
-            <div className="mb-6 flex flex-wrap gap-3">
+            <div className="mb-6 flex flex-wrap gap-2">
               <button 
-                className={`px-4 py-2 rounded-lg ${
+                className={`px-3 py-1.5 md:px-4 md:py-2 rounded-lg text-sm md:text-base ${
                   selectedSemester === 'Tous' 
                     ? 'bg-blue-600 text-white' 
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
                 onClick={() => setSelectedSemester('Tous')}
               >
-                Tous les cours
+                Tous
               </button>
               <button 
-                className={`px-4 py-2 rounded-lg ${
+                className={`px-3 py-1.5 md:px-4 md:py-2 rounded-lg text-sm md:text-base ${
                   selectedSemester === 'S1' 
                     ? 'bg-blue-600 text-white' 
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -412,7 +422,7 @@ export default function CoursPage() {
                 Semestre 1
               </button>
               <button 
-                className={`px-4 py-2 rounded-lg ${
+                className={`px-3 py-1.5 md:px-4 md:py-2 rounded-lg text-sm md:text-base ${
                   selectedSemester === 'S2' 
                     ? 'bg-blue-600 text-white' 
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -423,13 +433,13 @@ export default function CoursPage() {
               </button>
             </div>
 
-            {/* Cours Table */}
+            {/* Cours Table - responsive design */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-6">
-              <div className="px-6 py-4 border-b border-gray-200">
+              <div className="px-4 md:px-6 py-4 border-b border-gray-200">
                 <h2 className="text-lg font-semibold text-gray-900">Liste des cours</h2>
-                <p className="text-gray-600 mt-1">
-                  Programme complet - {getNomSpecialite(specialite)} {niveau} 
-                  {selectedSemester !== 'Tous' && ` (Semestre ${selectedSemester})`}
+                <p className="text-gray-600 text-sm mt-1">
+                  {getNomSpecialite(specialite)} {niveau} 
+                  {selectedSemester !== 'Tous' && ` - Semestre ${selectedSemester}`}
                 </p>
               </div>
 
@@ -437,22 +447,22 @@ export default function CoursPage() {
                 <table className="w-full min-w-full">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Matière
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
                         Enseignant
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Volume horaire
+                      <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
+                        Volume
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Semestre
+                      <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Sem.
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
                         Description
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
@@ -460,16 +470,22 @@ export default function CoursPage() {
                   <tbody className="divide-y divide-gray-200">
                     {filteredCours.map((coursItem) => (
                       <tr key={coursItem.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <td className="px-4 md:px-6 py-4 text-sm font-medium text-gray-900">
                           {coursItem.matiere}
+                          <div className="md:hidden text-xs text-gray-500 mt-1">
+                            {coursItem.enseignant}
+                          </div>
+                          <div className="md:hidden text-xs text-gray-500">
+                            {coursItem.volumeHoraire}
+                          </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-900 hidden md:table-cell">
                           {coursItem.enseignant}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">
                           {coursItem.volumeHoraire}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                           <span className={`px-2 py-1 text-xs rounded-full ${
                             coursItem.semestre === 'S1' 
                               ? 'bg-blue-100 text-blue-800' 
@@ -478,18 +494,19 @@ export default function CoursPage() {
                             {coursItem.semestre}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-500">
+                        <td className="px-4 md:px-6 py-4 text-sm text-gray-500 hidden lg:table-cell">
                           {coursItem.description}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <td className="px-4 md:px-6 py-4 whitespace-nowrap text-sm">
                           <button 
                             onClick={() => generateCoursePDF(coursItem)}
                             className="text-blue-600 hover:text-blue-800 flex items-center"
+                            aria-label="Télécharger le cours"
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
-                            Télécharger
+                            <span className="hidden md:inline ml-1">PDF</span>
                           </button>
                         </td>
                       </tr>
@@ -500,22 +517,21 @@ export default function CoursPage() {
             </div>
 
             {/* Programme Information */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 md:p-6">
               <div className="flex">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-500 mr-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-500 mr-3 md:mr-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div>
-                  <h3 className="text-lg font-medium text-blue-800">À propos de votre programme</h3>
-                  <p className="text-blue-700 mt-2">
+                  <h3 className="text-base md:text-lg font-medium text-blue-800">À propos de votre programme</h3>
+                  <p className="text-blue-700 text-sm md:text-base mt-2">
                     Le programme de {getNomSpecialite(specialite)} niveau {niveau} est conçu pour vous donner les compétences 
                     nécessaires dans votre domaine. Vous trouverez ci-dessus la liste complète des cours 
-                    pour l'année académique en cours. Pour plus de détails sur un cours spécifique, 
-                    consultez votre espace de cours ou contactez votre enseignant.
+                    pour l'année académique en cours.
                   </p>
-                  <div className="mt-4">
-                    <button className="text-blue-600 hover:text-blue-800 font-medium flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="mt-3">
+                    <button className="text-blue-600 hover:text-blue-800 font-medium flex items-center text-sm md:text-base">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 md:h-5 md:w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                       </svg>
                       Contacter le responsable pédagogique
@@ -538,12 +554,12 @@ function SummaryCard({ title, value, color, icon }: {
   icon: React.ReactNode;
 }) {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 flex items-center justify-between">
+    <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-200 flex items-center justify-between">
       <div className="flex-1 min-w-0">
-        <h3 className="text-base md:text-lg font-semibold text-gray-900 truncate">{title}</h3>
-        <p className={`text-xl md:text-2xl font-bold text-${color} truncate`}>{value}</p>
+        <h3 className="text-xs md:text-base font-semibold text-gray-900 truncate">{title}</h3>
+        <p className={`text-base md:text-xl font-bold text-${color} truncate`}>{value}</p>
       </div>
-      <div className={`ml-4 w-10 h-10 md:w-12 md:h-12 bg-${color}-100 rounded-lg flex items-center justify-center flex-shrink-0`}>
+      <div className={`ml-2 w-8 h-8 md:w-10 md:h-10 bg-${color}-100 rounded-lg flex items-center justify-center flex-shrink-0`}>
         {icon}
       </div>
     </div>

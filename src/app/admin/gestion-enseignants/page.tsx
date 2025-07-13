@@ -77,6 +77,16 @@ const GestionEnseignants = () => {
   const itemsPerPage = 5;
   const [enseignants, setEnseignants] = useState<Enseignant[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Détecter la taille de l'écran
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Chargement initial des données
   useEffect(() => {
@@ -262,32 +272,25 @@ const GestionEnseignants = () => {
     }
   };
 
-  // CORRECTION DÉFINITIVE : Gestion de la suppression d'un enseignant
+  // Gestion de la suppression d'un enseignant
   const handleDelete = (id: number) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer cet enseignant ?')) {
-      // Fermer TOUTES les modales de manière synchrone
       setViewingId(null);
       setIsEditing(false);
       setShowForm(false);
       setEditingId(null);
       
-      // Ajout d'un délai pour laisser le DOM se mettre à jour
       setTimeout(() => {
         setEnseignants(prevEnseignants => {
           const updatedEnseignants = prevEnseignants.filter(e => e.id !== id);
-          
-          // Sauvegarder immédiatement
           localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedEnseignants));
-          
-          // Ajuster la pagination
           const newTotalPages = Math.ceil(updatedEnseignants.length / itemsPerPage);
           if (currentPage > newTotalPages && newTotalPages > 0) {
             setCurrentPage(newTotalPages);
           }
-          
           return updatedEnseignants;
         });
-      }, 50); // Délai court pour laisser le DOM se mettre à jour
+      }, 50);
     }
   };
 
@@ -295,6 +298,7 @@ const GestionEnseignants = () => {
   const handleView = (id: number) => {
     setViewingId(id);
     setShowForm(false);
+    setSidebarOpen(false);
   };
 
   // Réinitialisation du formulaire
@@ -400,11 +404,21 @@ const GestionEnseignants = () => {
 
   return (
     <RouteGuard roles={['admin']}>
-      <div className="min-h-screen bg-gray-50 flex">
+      <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
+        {/* Overlay pour la sidebar mobile */}
+        {sidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          ></div>
+        )}
+
         {/* Sidebar */}
-        <div className="fixed left-0 top-0 h-full w-64 bg-[#1e40af] text-white flex flex-col">
+        <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#1e40af] text-white flex-col transform transition-transform duration-300 ease-in-out md:translate-x-0 md:static ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}>
           <div className="p-6 border-b border-[#3b82f6]">
-            <h1 className="text-xl font-bold">Administrateur  Général de l'Université</h1>
+            <h1 className="text-xl font-bold">Administrateur Général de l'Université</h1>
             <p className="text-blue-200 text-sm">Université Numérique du Sénégal</p>
           </div>
           
@@ -419,6 +433,7 @@ const GestionEnseignants = () => {
                         ? 'bg-[#3b82f6] text-white'
                         : 'hover:bg-[#3b82f6]'
                     }`}
+                    onClick={() => setSidebarOpen(false)}
                   >
                     <i className={`${item.icon} mr-3`}></i>
                     <span>{item.name}</span>
@@ -444,16 +459,29 @@ const GestionEnseignants = () => {
         </div>
 
         {/* Main Content */}
-        <div className="ml-64 flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col">
+          {/* Mobile Menu Button */}
+          <div className="md:hidden p-4 bg-[#1e40af] text-white flex justify-between items-center">
+            <button 
+              className="text-white"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <i className="fa-solid fa-bars text-xl"></i>
+            </button>
+            <h1 className="text-lg font-bold">Gestion Enseignants</h1>
+            <div className="w-8"></div> {/* Spacer */}
+          </div>
+
           {/* Header */}
-          <header className="bg-white shadow-sm border-b p-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-gray-800">Gestion des Enseignants</h2>
+          <header className="bg-white shadow-sm border-b p-4 md:p-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-800">Gestion des Enseignants</h2>
               <button 
                 className="bg-[#1e40af] text-white px-4 py-2 rounded-lg hover:bg-[#1e3a8a] transition-colors flex items-center"
                 onClick={() => {
                   resetForm();
                   setShowForm(true);
+                  setSidebarOpen(false);
                 }}
               >
                 <i className="fa-solid fa-plus mr-2"></i>
@@ -463,44 +491,47 @@ const GestionEnseignants = () => {
           </header>
 
           {/* Content Area */}
-          <div className="flex-1 p-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="flex-1 p-4 md:p-6">
+            <div className="grid grid-cols-1 gap-6">
               {/* Partie 1: Liste des enseignants */}
               <div className="bg-white rounded-lg shadow-sm border">
-                <div className="p-6 border-b">
+                <div className="p-4 md:p-6 border-b">
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">Liste des Enseignants</h3>
-                  <div className="flex flex-col md:flex-row gap-4 mb-4">
+                  <div className="flex flex-col gap-4 mb-4">
                     <input
                       type="text"
                       placeholder="Rechercher..."
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
-                      className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af]"
+                      className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af]"
                     />
-                    <select
-                      value={filiere}
-                      onChange={(e) => setFiliere(e.target.value)}
-                      className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af]"
-                    >
-                      <option value="Toutes">Toutes les filières</option>
-                      <option value="IDA">IDA</option>
-                      <option value="MIC">MIC</option>
-                      <option value="CD">CD</option>
-                    </select>
-                    {/* <select
-                      value={statut}
-                      onChange={(e) => setStatut(e.target.value)}
-                      className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af]"
-                    >
-                      <option value="Tous">Tous les statuts</option>
-                      <option value="Actif">Actif</option>
-                      <option value="Inactif">Inactif</option>
-                    </select> */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <select
+                        value={filiere}
+                        onChange={(e) => setFiliere(e.target.value)}
+                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af]"
+                      >
+                        <option value="Toutes">Toutes les filières</option>
+                        <option value="IDA">IDA</option>
+                        <option value="MIC">MIC</option>
+                        <option value="CD">CD</option>
+                      </select>
+                      <select
+                        value={statut}
+                        onChange={(e) => setStatut(e.target.value)}
+                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af]"
+                      >
+                        <option value="Tous">Tous les statuts</option>
+                        <option value="Actif">Actif</option>
+                        <option value="Inactif">Inactif</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
                 
-                <div className="overflow-x-auto">
-                  <table className="w-full">
+                {/* Vue Desktop */}
+                <div className="hidden md:block overflow-x-auto">
+                  <table className="w-full min-w-[600px]">
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Enseignant</th>
@@ -582,11 +613,94 @@ const GestionEnseignants = () => {
                   </table>
                 </div>
                 
-                <div className="p-4 border-t flex flex-col md:flex-row justify-between items-center">
-                  <span className="text-sm text-gray-500 mb-2 md:mb-0">
+                {/* Vue Mobile */}
+                <div className="md:hidden">
+                  {currentEnseignants.map((enseignant) => (
+                    <div key={enseignant.id} className="border-b p-4 hover:bg-gray-50">
+                      <div className="flex items-center cursor-pointer mb-3" onClick={() => handleView(enseignant.id)}>
+                        <img 
+                          src={enseignant.avatar} 
+                          alt="Avatar" 
+                          className="w-12 h-12 rounded-full mr-3 object-cover" 
+                        />
+                        <div>
+                          <p className="font-medium text-gray-900">{enseignant.prenom} {enseignant.nom}</p>
+                          <p className="text-sm text-gray-500">{enseignant.email}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-3 mb-3">
+                        <div>
+                          <p className="text-xs text-gray-500">Téléphone</p>
+                          <p className="text-sm">{enseignant.telephone}</p>
+                        </div>
+                        
+                        <div>
+                          <p className="text-xs text-gray-500">Filière</p>
+                          <span className={`px-2 py-1 text-xs rounded-full ${
+                            enseignant.filiere === 'IDA' ? 'bg-blue-100 text-blue-800' :
+                            enseignant.filiere === 'MIC' ? 'bg-purple-100 text-purple-800' :
+                            'bg-orange-100 text-orange-800'
+                          }`}>
+                            {enseignant.filiere}
+                          </span>
+                        </div>
+                        
+                        <div>
+                          <p className="text-xs text-gray-500">Niveaux</p>
+                          <div className="flex flex-wrap gap-1">
+                            {enseignant.niveaux.map((n) => (
+                              <span key={n} className="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded">
+                                {n}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <p className="text-xs text-gray-500">Statut</p>
+                          <span className={`px-2 py-1 text-xs rounded-full ${
+                            enseignant.status === 'Actif' 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {enseignant.status}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-end gap-3 pt-2 border-t">
+                        <button 
+                          className="text-blue-600 hover:text-blue-800"
+                          onClick={() => handleView(enseignant.id)}
+                          title="Voir détails"
+                        >
+                          <i className="fa-solid fa-eye mr-1"></i> Voir
+                        </button>
+                        <button 
+                          className="text-[#1e40af] hover:text-[#1e3a8a]"
+                          onClick={() => handleEdit(enseignant.id)}
+                          title="Modifier"
+                        >
+                          <i className="fa-solid fa-edit mr-1"></i> Modifier
+                        </button>
+                        <button 
+                          className="text-red-600 hover:text-red-800"
+                          onClick={() => handleDelete(enseignant.id)}
+                          title="Supprimer"
+                        >
+                          <i className="fa-solid fa-trash mr-1"></i> Supprimer
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="p-4 border-t flex flex-col md:flex-row justify-between items-center gap-4">
+                  <span className="text-sm text-gray-500">
                     Affichage {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredEnseignants.length)} sur {filteredEnseignants.length} enseignants
                   </span>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2 justify-center">
                     <button 
                       className={`px-3 py-1 border rounded ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'}`}
                       onClick={goToPreviousPage}
@@ -595,7 +709,7 @@ const GestionEnseignants = () => {
                       Précédent
                     </button>
                     
-                    <div className="flex gap-1">
+                    <div className="flex flex-wrap gap-1">
                       {pageNumbers.map(number => (
                         <button
                           key={number}
@@ -625,13 +739,13 @@ const GestionEnseignants = () => {
               {/* Partie 2: Formulaire */}
               {showForm ? (
                 <div className="bg-white rounded-lg shadow-sm border">
-                  <div className="p-6 border-b">
+                  <div className="p-4 md:p-6 border-b">
                     <h3 className="text-lg font-semibold text-gray-800">
                       {isEditing ? 'Modifier un Enseignant' : 'Ajouter un Enseignant'}
                     </h3>
                   </div>
                   
-                  <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                  <form onSubmit={handleSubmit} className="p-4 md:p-6 space-y-4">
                     <div className="flex flex-col items-center">
                       <div className="relative">
                         <img 
@@ -737,7 +851,7 @@ const GestionEnseignants = () => {
                     
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Niveaux enseignés</label>
-                      <div className="grid grid-cols-3 gap-2">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                         {['L1', 'L2', 'L3', 'M1', 'M2'].map((niv) => (
                           <label key={niv} className="flex items-center">
                             <input
@@ -789,10 +903,10 @@ const GestionEnseignants = () => {
                       </select>
                     </div>
                     
-                    <div className="flex gap-4 pt-4">
+                    <div className="flex flex-col sm:flex-row gap-4 pt-4">
                       <button 
                         type="submit"
-                        className="bg-[#1e40af] text-white px-6 py-2 rounded-lg hover:bg-[#1e3a8a] transition-colors"
+                        className="bg-[#1e40af] text-white px-6 py-2 rounded-lg hover:bg-[#1e3a8a] transition-colors flex-1 flex justify-center items-center"
                       >
                         <i className="fa-solid fa-save mr-2"></i>
                         Enregistrer
@@ -800,7 +914,7 @@ const GestionEnseignants = () => {
                       <button 
                         type="button"
                         onClick={resetForm}
-                        className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors"
+                        className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors flex-1"
                       >
                         <i className="fa-solid fa-times mr-2"></i>
                         Annuler
@@ -810,7 +924,7 @@ const GestionEnseignants = () => {
                 </div>
               ) : (
                 <div className="bg-white rounded-lg shadow-sm border flex items-center justify-center">
-                  <div className="text-center p-12">
+                  <div className="text-center p-8 md:p-12">
                     <i className="fa-solid fa-chalkboard-user text-5xl text-gray-300 mb-4"></i>
                     <h3 className="text-lg font-semibold text-gray-700 mb-2">
                       {isEditing ? 'Modification' : 'Ajout'} d'un enseignant
@@ -838,9 +952,9 @@ const GestionEnseignants = () => {
 
       {/* Modale de détails */}
       {viewingId && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" 
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" 
              onClick={() => setViewingId(null)}>
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl" 
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md md:max-w-2xl max-h-[90vh] overflow-y-auto" 
                onClick={(e) => e.stopPropagation()}>
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
@@ -855,11 +969,11 @@ const GestionEnseignants = () => {
               
               {viewingEnseignant ? (
                 <div className="flex flex-col md:flex-row gap-6">
-                  <div className="flex-shrink-0">
+                  <div className="flex-shrink-0 flex justify-center">
                     <img 
                       src={viewingEnseignant.avatar} 
                       alt="Avatar" 
-                      className="w-32 h-32 rounded-full object-cover border-4 border-[#1e40af]"
+                      className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-[#1e40af]"
                     />
                   </div>
                   
@@ -895,7 +1009,7 @@ const GestionEnseignants = () => {
                         <p className="font-medium">{viewingEnseignant.telephone}</p>
                       </div>
                       
-                      <div>
+                      <div className="md:col-span-2">
                         <p className="text-sm text-gray-500">Niveaux enseignés</p>
                         <p className="font-medium">{viewingEnseignant.niveaux.join(', ')}</p>
                       </div>

@@ -247,17 +247,27 @@ export default function AbsencesPage() {
         <main className="flex-1 flex flex-col">
           {/* Header */}
           <header className="bg-white shadow-sm border-b border-gray-200 px-4 py-4 md:px-6 flex items-center justify-between">
-            <div>
-              <h1 className="text-xl md:text-2xl font-bold text-gray-900">
-                Gestion des Absences - {getNomSpecialite(specialite)}
-              </h1>
-              <p className="text-gray-600">Niveau {niveau} - Année académique 2025</p>
+            <div className="flex items-center">
+              <button 
+                onClick={toggleSidebar}
+                className="md:hidden text-gray-500 mr-4"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+              </button>
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold text-gray-900">
+                  Gestion des Absences - {getNomSpecialite(specialite)}
+                </h1>
+                <p className="text-gray-600">Niveau {niveau} - Année académique 2025</p>
+              </div>
             </div>
           </header>
 
           <div className="flex-1 p-4 md:p-6 overflow-auto">
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6">
               <StatsCard 
                 title="Total Absences" 
                 value={stats.total.toString()} 
@@ -299,8 +309,8 @@ export default function AbsencesPage() {
               />
             </div>
 
-            {/* Absences Table */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-6">
+            {/* Absences Table - Hidden on mobile */}
+            <div className="hidden md:block bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-6">
               <div className="px-6 py-4 border-b border-gray-200">
                 <h2 className="text-lg font-semibold text-gray-900">Détail des absences</h2>
                 <p className="text-gray-600 mt-1">Semestre 1 - {getNomSpecialite(specialite)}</p>
@@ -371,11 +381,60 @@ export default function AbsencesPage() {
               </div>
             </div>
 
+            {/* Mobile Absences List */}
+            <div className="md:hidden">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-6">
+                <div className="px-4 py-4 border-b border-gray-200">
+                  <h2 className="text-lg font-semibold text-gray-900">Détail des absences</h2>
+                  <p className="text-gray-600 mt-1">Semestre 1 - {getNomSpecialite(specialite)}</p>
+                </div>
+                
+                <div className="divide-y divide-gray-200">
+                  {absences.map((absence, index) => (
+                    <div key={index} className="p-4">
+                      <div className="flex justify-between">
+                        <div>
+                          <p className="font-medium text-gray-900">{absence.matiere}</p>
+                          <p className="text-sm text-gray-500">{absence.date} | {absence.horaire}</p>
+                        </div>
+                        <div>
+                          <span className={`px-2 py-1 text-xs rounded-full font-medium ${
+                            absence.statut === "Non justifiée" 
+                              ? "bg-red-100 text-red-800" 
+                              : absence.statut === "Justifiée"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-yellow-100 text-yellow-800"
+                          }`}>
+                            {absence.statut}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-3">
+                        {absence.statut === "Non justifiée" || absence.statut === "En attente" ? (
+                          <button 
+                            onClick={() => toggleJustificationForm(absence)}
+                            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                          >
+                            Justifier
+                          </button>
+                        ) : (
+                          <button className="text-gray-400 text-sm font-medium">
+                            Voir justificatif
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             {/* Justification Form */}
             {isAddingJustification && selectedAbsence && (
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-xl font-semibold text-gray-900">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 md:p-6">
+                <div className="flex justify-between items-center mb-4 md:mb-6">
+                  <h3 className="text-lg md:text-xl font-semibold text-gray-900">
                     Justification d'absence - {selectedAbsence.matiere}
                   </h3>
                   <button 
@@ -388,7 +447,7 @@ export default function AbsencesPage() {
                   </button>
                 </div>
                 
-                <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={handleSubmitJustification}>
+                <form className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6" onSubmit={handleSubmitJustification}>
                   <div>
                     <label htmlFor="date-absence" className="block text-sm font-medium text-gray-700 mb-2">
                       Date d'absence
@@ -433,15 +492,15 @@ export default function AbsencesPage() {
                       Pièce justificative
                     </label>
                     <div className="flex items-center justify-center w-full">
-                      <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-32 md:h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6 px-2">
                           <svg className="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
                           </svg>
-                          <p className="mb-2 text-sm text-gray-500">
+                          <p className="mb-2 text-sm text-gray-500 text-center">
                             <span className="font-semibold">Cliquez pour télécharger</span> ou glissez-déposez
                           </p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-gray-500 text-center">
                             PDF, JPG, PNG (MAX. 5MB)
                           </p>
                         </div>
@@ -450,17 +509,17 @@ export default function AbsencesPage() {
                     </div> 
                   </div>
                   
-                  <div className="md:col-span-2 flex justify-end space-x-4 mt-4">
+                  <div className="md:col-span-2 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4 mt-4">
                     <button
                       type="button"
                       onClick={() => toggleJustificationForm(null)}
-                      className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                      className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 w-full sm:w-auto"
                     >
                       Annuler
                     </button>
                     <button
                       type="submit"
-                      className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                      className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 w-full sm:w-auto"
                     >
                       Soumettre le justificatif
                     </button>

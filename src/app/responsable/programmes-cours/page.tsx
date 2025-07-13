@@ -396,11 +396,33 @@ export default function ProgrammesCours() {
         {/* Main content */}
         <div className="flex flex-1 flex-col overflow-hidden">
           {/* Header */}
-          <header className="bg-white shadow-sm border-b p-6">
-            <div className="flex justify-between items-center">
-              <div>
-                <h1 className="text-2xl font-bold text-gray-800">Programmes et Cours</h1>
-                <p className="text-gray-600">Gestion des modules et planning académique</p>
+          <header className="bg-white shadow-sm border-b p-4 sm:p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                {/* Bouton hamburger pour les petites écrans */}
+                <button
+                  className="mr-2 text-gray-500 hover:text-gray-600 md:hidden"
+                  onClick={toggleSidebar}
+                  aria-label="Toggle sidebar"
+                >
+                  <svg 
+                    className="h-6 w-6" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M4 6h16M4 12h16M4 18h16" 
+                    />
+                  </svg>
+                </button>
+                <div>
+                  <h1 className="text-xl font-bold text-gray-800">Programmes et Cours</h1>
+                  <p className="text-gray-600 text-sm hidden sm:block">Gestion des modules et planning académique</p>
+                </div>
               </div>
               <button 
                 className="bg-indigo-800 text-white px-4 py-2 rounded-lg hover:bg-indigo-900 transition-colors flex items-center"
@@ -410,7 +432,8 @@ export default function ProgrammesCours() {
                 }}
               >
                 <i className="fa-solid fa-plus mr-2"></i>
-                Nouveau Module
+                <span className="hidden sm:inline">Nouveau Module</span>
+                <span className="sm:hidden">Ajouter</span>
               </button>
             </div>
           </header>
@@ -704,53 +727,53 @@ export default function ProgrammesCours() {
           {/* Content */}
           <main className="flex-1 overflow-y-auto">
             {/* Stats Cards */}
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-                <div className="bg-white p-6 rounded-lg shadow-sm border">
+            <div className="p-4 sm:p-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-6 mb-6">
+                <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Modules Totaux</p>
-                      <p className="text-2xl font-bold text-indigo-800">{cours.length}</p>
+                      <p className="text-xs sm:text-sm font-medium text-gray-600">Modules Totaux</p>
+                      <p className="text-xl sm:text-2xl font-bold text-indigo-800">{cours.length}</p>
                       <p className="text-xs text-gray-500">modules</p>
                     </div>
                     <i className="fa-solid fa-book text-indigo-800 text-xl"></i>
                   </div>
                 </div>
-                <div className="bg-white p-6 rounded-lg shadow-sm border">
+                <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Sessions Planifiées</p>
-                      <p className="text-2xl font-bold text-indigo-800">{sessions.length}</p>
+                      <p className="text-xs sm:text-sm font-medium text-gray-600">Sessions Planifiées</p>
+                      <p className="text-xl sm:text-2xl font-bold text-indigo-800">{sessions.length}</p>
                       <p className="text-xs text-gray-500">sessions</p>
                     </div>
                     <i className="fa-solid fa-calendar-alt text-indigo-800 text-xl"></i>
                   </div>
                 </div>
-                <div className="bg-white p-6 rounded-lg shadow-sm border">
+                <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Enseignants</p>
-                      <p className="text-2xl font-bold text-indigo-800">{enseignants.length}</p>
+                      <p className="text-xs sm:text-sm font-medium text-gray-600">Enseignants</p>
+                      <p className="text-xl sm:text-2xl font-bold text-indigo-800">{enseignants.length}</p>
                       <p className="text-xs text-gray-500">actifs</p>
                     </div>
                     <i className="fa-solid fa-chalkboard-teacher text-indigo-800 text-xl"></i>
                   </div>
                 </div>
-                <div className="bg-white p-6 rounded-lg shadow-sm border">
+                <div className="hidden lg:block bg-white p-4 sm:p-6 rounded-lg shadow-sm border">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Niveaux</p>
-                      <p className="text-2xl font-bold text-indigo-800">{niveauxAcademiques.length}</p>
+                      <p className="text-xs sm:text-sm font-medium text-gray-600">Niveaux</p>
+                      <p className="text-xl sm:text-2xl font-bold text-indigo-800">{niveauxAcademiques.length}</p>
                       <p className="text-xs text-gray-500">académiques</p>
                     </div>
                     <i className="fa-solid fa-layer-group text-indigo-800 text-xl"></i>
                   </div>
                 </div>
-                <div className="bg-white p-6 rounded-lg shadow-sm border">
+                <div className="hidden lg:block bg-white p-4 sm:p-6 rounded-lg shadow-sm border">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Étudiants</p>
-                      <p className="text-2xl font-bold text-indigo-800">248</p>
+                      <p className="text-xs sm:text-sm font-medium text-gray-600">Étudiants</p>
+                      <p className="text-xl sm:text-2xl font-bold text-indigo-800">248</p>
                       <p className="text-xs text-gray-500">inscrits</p>
                     </div>
                     <i className="fa-solid fa-users text-indigo-800 text-xl"></i>
@@ -760,18 +783,18 @@ export default function ProgrammesCours() {
             </div>
 
             {/* Main Content Grid */}
-            <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Modules Management */}
               <div className="lg:col-span-2">
                 <div className="bg-white rounded-lg shadow-sm border">
-                  <div className="p-6 border-b">
+                  <div className="p-4 sm:p-6 border-b">
                     <h3 className="text-lg font-semibold text-gray-800">Gestion des Modules</h3>
                     <p className="text-gray-600 text-sm">Ajouter/modifier les modules par classe</p>
                   </div>
-                  <div className="p-6">
-                    <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 mb-6">
+                  <div className="p-4 sm:p-6">
+                    <div className="flex flex-col md:flex-row gap-3 mb-4 sm:mb-6">
                       <select 
-                        className="border rounded-lg px-3 py-2 text-sm"
+                        className="border rounded-lg px-3 py-2 text-sm w-full"
                         value={selectedNiveau}
                         onChange={(e) => setSelectedNiveau(e.target.value)}
                       >
@@ -783,18 +806,18 @@ export default function ProgrammesCours() {
                       <input 
                         type="text" 
                         placeholder="Rechercher un module..." 
-                        className="border rounded-lg px-3 py-2 text-sm flex-1"
+                        className="border rounded-lg px-3 py-2 text-sm flex-1 w-full"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                       />
                     </div>
 
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {filteredCours.length > 0 ? (
                         filteredCours.map((c) => (
-                          <div key={c.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                            <div className="flex justify-between items-start">
-                              <div>
+                          <div key={c.id} className="border rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow">
+                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                              <div className="flex-1">
                                 <h4 className="font-medium text-gray-800">{c.titre}</h4>
                                 <p className="text-sm text-gray-600">{c.niveau} - {c.heures}h - {c.enseignant}</p>
                                 <div className="flex flex-wrap gap-2 mt-2">
@@ -815,7 +838,7 @@ export default function ProgrammesCours() {
                                   </span>
                                 </div>
                               </div>
-                              <div className="flex space-x-2">
+                              <div className="flex space-x-2 sm:self-start">
                                 <button 
                                   className="text-indigo-800 hover:text-indigo-900"
                                   onClick={() => handleEditModule(c)}
@@ -844,14 +867,14 @@ export default function ProgrammesCours() {
 
                 {/* Planning Section */}
                 <div className="bg-white rounded-lg shadow-sm border mt-6">
-                  <div className="p-6 border-b">
-                    <div className="flex justify-between items-center">
+                  <div className="p-4 sm:p-6 border-b">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                       <div>
                         <h3 className="text-lg font-semibold text-gray-800">Planning des Cours</h3>
                         <p className="text-gray-600 text-sm">Organisation et suivi des emplois du temps</p>
                       </div>
                       <button 
-                        className="text-indigo-800 hover:text-indigo-900 flex items-center"
+                        className="text-indigo-800 hover:text-indigo-900 flex items-center text-sm sm:text-base"
                         onClick={() => {
                           setNewSession({
                             moduleId: '',
@@ -870,42 +893,46 @@ export default function ProgrammesCours() {
                       </button>
                     </div>
                   </div>
-                  <div className="p-6">
-                    <div className="grid grid-cols-7 gap-2 text-xs">
-                      {/* En-têtes des jours */}
-                      <div className="font-medium text-center p-2">Heure</div>
-                      {joursSemaine.map(jour => (
-                        <div key={jour} className="font-medium text-center p-2">{jour}</div>
-                      ))}
-                      
-                      {/* Lignes horaires */}
-                      {heuresCours.map(heure => (
-                        <React.Fragment key={heure}>
-                          <div className="font-medium text-center p-2 border-t">{heure}</div>
+                  <div className="p-3 sm:p-6">
+                    <div className="overflow-x-auto">
+                      <div className="min-w-[700px]">
+                        <div className="grid grid-cols-7 gap-1 sm:gap-2 text-xs">
+                          {/* En-têtes des jours */}
+                          <div className="font-medium text-center p-2">Heure</div>
                           {joursSemaine.map(jour => (
-                            <div 
-                              key={`${jour}-${heure}`}
-                              className="p-2 border-t relative min-h-[80px]"
-                            >
-                              {sessions
-                                .filter(s => s.jour === jour && s.heureDebut === heure)
-                                .map(session => (
-                                  <div 
-                                    key={session.id}
-                                    className="absolute inset-1 bg-indigo-800 text-white p-2 rounded cursor-pointer hover:bg-indigo-900"
-                                    onClick={() => handleEditSession(session)}
-                                  >
-                                    <div className="font-medium truncate">{session.titre}</div>
-                                    <div className="text-xs">{session.salle}</div>
-                                    <div className="text-xs">{session.enseignant.split(' ')[0]}</div>
-                                    <div className="text-xs">{session.niveau}</div>
-                                  </div>
-                                ))
-                              }
-                            </div>
+                            <div key={jour} className="font-medium text-center p-2">{jour}</div>
                           ))}
-                        </React.Fragment>
-                      ))}
+                          
+                          {/* Lignes horaires */}
+                          {heuresCours.map(heure => (
+                            <React.Fragment key={heure}>
+                              <div className="font-medium text-center p-2 border-t">{heure}</div>
+                              {joursSemaine.map(jour => (
+                                <div 
+                                  key={`${jour}-${heure}`}
+                                  className="p-2 border-t relative min-h-[70px] sm:min-h-[80px]"
+                                >
+                                  {sessions
+                                    .filter(s => s.jour === jour && s.heureDebut === heure)
+                                    .map(session => (
+                                      <div 
+                                        key={session.id}
+                                        className="absolute inset-1 bg-indigo-800 text-white p-1 sm:p-2 rounded cursor-pointer hover:bg-indigo-900"
+                                        onClick={() => handleEditSession(session)}
+                                      >
+                                        <div className="font-medium truncate text-xs sm:text-sm">{session.titre}</div>
+                                        <div className="text-xs">{session.salle}</div>
+                                        <div className="text-xs">{session.enseignant.split(' ')[0]}</div>
+                                        <div className="text-xs">{session.niveau}</div>
+                                      </div>
+                                    ))
+                                  }
+                                </div>
+                              ))}
+                            </React.Fragment>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                     
                     <div className="mt-6">
@@ -914,17 +941,17 @@ export default function ProgrammesCours() {
                         {sessions.map(session => (
                           <div 
                             key={session.id}
-                            className="border rounded-lg p-4 flex justify-between items-center hover:bg-gray-50 cursor-pointer"
+                            className="border rounded-lg p-3 sm:p-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 hover:bg-gray-50 cursor-pointer"
                             onClick={() => handleEditSession(session)}
                           >
-                            <div>
+                            <div className="flex-1">
                               <div className="font-medium">{session.titre}</div>
                               <div className="text-sm text-gray-600">
                                 {session.jour} • {session.heureDebut} - {session.heureFin} • {session.salle}
                               </div>
                               <div className="text-sm">{session.enseignant} • {session.niveau}</div>
                             </div>
-                            <div className="flex space-x-2">
+                            <div className="flex space-x-2 self-end">
                               <button 
                                 className="text-indigo-800 hover:text-indigo-900"
                                 onClick={(e) => {
@@ -956,10 +983,10 @@ export default function ProgrammesCours() {
               <div className="space-y-6">
                 {/* Teacher Assignments */}
                 <div className="bg-white rounded-lg shadow-sm border">
-                  <div className="p-6 border-b">
+                  <div className="p-4 sm:p-6 border-b">
                     <h3 className="text-lg font-semibold text-gray-800">Affectation Enseignants</h3>
                   </div>
-                  <div className="p-6 space-y-4">
+                  <div className="p-4 sm:p-6 space-y-4">
                     {enseignants.map((enseignant) => (
                       <div key={enseignant.id} className="flex items-center space-x-3">
                         <img 
@@ -985,10 +1012,10 @@ export default function ProgrammesCours() {
 
                 {/* Objectives */}
                 <div className="bg-white rounded-lg shadow-sm border">
-                  <div className="p-6 border-b">
+                  <div className="p-4 sm:p-6 border-b">
                     <h3 className="text-lg font-semibold text-gray-800">Objectifs Pédagogiques</h3>
                   </div>
-                  <div className="p-6">
+                  <div className="p-4 sm:p-6">
                     <ul className="space-y-3 text-sm">
                       {objectifs.map((objectif, index) => (
                         <li key={`obj-${index}`} className="flex items-start space-x-2">
@@ -1002,10 +1029,10 @@ export default function ProgrammesCours() {
 
                 {/* Career Prospects */}
                 <div className="bg-white rounded-lg shadow-sm border">
-                  <div className="p-6 border-b">
+                  <div className="p-4 sm:p-6 border-b">
                     <h3 className="text-lg font-semibold text-gray-800">Débouchés Professionnels</h3>
                   </div>
-                  <div className="p-6">
+                  <div className="p-4 sm:p-6">
                     <div className="space-y-3 text-sm">
                       {debouches.map((debouche, index) => (
                         <div key={`deb-${index}`} className="flex items-center space-x-2">

@@ -25,6 +25,7 @@ interface Etudiant {
 const GestionEtudiants = () => {
   const pathname = usePathname();
   const { user } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   
   const navItems = [
     { 
@@ -372,11 +373,31 @@ const GestionEtudiants = () => {
   return (
     <RouteGuard roles={['admin']}>
       <div className="min-h-screen bg-gray-50 flex">
-        {/* Sidebar */}
-        <div className="fixed left-0 top-0 h-full w-64 bg-[#1e40af] text-white flex flex-col">
-          <div className="p-6 border-b border-[#3b82f6]">
-            <h1 className="text-xl font-bold">Administrateur  Général de l'Université</h1>
-            <p className="text-blue-200 text-sm">Université Numérique du Sénégal</p>
+        {/* Overlay pour mobile */}
+        {sidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          ></div>
+        )}
+
+        {/* Sidebar - Responsive */}
+        <div 
+          className={`fixed left-0 top-0 h-full w-64 bg-[#1e40af] text-white flex flex-col z-50 transform transition-transform duration-300 ease-in-out md:translate-x-0 ${
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+        >
+          <div className="p-6 border-b border-[#3b82f6] flex justify-between items-center">
+            <div>
+              <h1 className="text-xl font-bold">Administrateur Général de l'Université</h1>
+              <p className="text-blue-200 text-sm">Université Numérique du Sénégal</p>
+            </div>
+            <button 
+              className="md:hidden text-white"
+              onClick={() => setSidebarOpen(false)}
+            >
+              <i className="fa-solid fa-times"></i>
+            </button>
           </div>
           
           <nav className="flex-1 p-4">
@@ -390,6 +411,7 @@ const GestionEtudiants = () => {
                         ? 'bg-[#3b82f6] text-white'
                         : 'hover:bg-[#3b82f6]'
                     }`}
+                    onClick={() => setSidebarOpen(false)}
                   >
                     <i className={`${item.icon} mr-3`}></i>
                     <span>{item.name}</span>
@@ -415,70 +437,73 @@ const GestionEtudiants = () => {
         </div>
 
         {/* Main Content */}
-        <div className="ml-64 flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col md:ml-64">
           {/* Header */}
           <header className="bg-white shadow-sm border-b p-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-gray-800">Gestion des Étudiants</h2>
+              <div className="flex items-center">
+                <button 
+                  className="md:hidden text-gray-500 hover:text-gray-700 mr-4"
+                  onClick={() => setSidebarOpen(true)}
+                >
+                  <i className="fa-solid fa-bars text-xl"></i>
+                </button>
+                <h2 className="text-xl md:text-2xl font-bold text-gray-800">Gestion des Étudiants</h2>
+              </div>
               <button 
-                className="bg-[#1e40af] text-white px-4 py-2 rounded-lg hover:bg-[#1e3a8a] transition-colors flex items-center"
+                className="bg-[#1e40af] text-white px-3 py-2 md:px-4 md:py-2 rounded-lg hover:bg-[#1e3a8a] transition-colors flex items-center text-sm md:text-base"
                 onClick={() => {
                   resetForm();
                   setShowForm(true);
                 }}
               >
-                <i className="fa-solid fa-plus mr-2"></i>
-                Ajouter un Étudiant
+                <i className="fa-solid fa-plus mr-1 md:mr-2"></i>
+                <span className="hidden sm:inline">Ajouter un Étudiant</span>
+                <span className="sm:hidden">Ajouter</span>
               </button>
             </div>
           </header>
 
           {/* Content Area */}
-          <div className="flex-1 p-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="flex-1 p-4 md:p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
               {/* Partie 1: Liste des étudiants */}
               <div className="bg-white rounded-lg shadow-sm border">
-                <div className="p-6 border-b">
+                <div className="p-4 md:p-6 border-b">
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">Liste des Étudiants</h3>
-                  <div className="flex flex-col md:flex-row gap-4 mb-4">
+                  <div className="flex flex-col sm:flex-row gap-2 md:gap-4 mb-4">
                     <input
                       type="text"
                       placeholder="Rechercher..."
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
-                      className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af]"
+                      className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af] text-sm md:text-base"
                     />
-                    <select
-                      value={filiere}
-                      onChange={(e) => setFiliere(e.target.value)}
-                      className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af]"
-                    >
-                      <option value="Toutes">Toutes les filières</option>
-                      <option value="IDA">IDA</option>
-                      <option value="MIC">MIC</option>
-                      <option value="CD">CD</option>
-                    </select>
-                    {/* <select
-                      value={niveau}
-                      onChange={(e) => setNiveau(e.target.value)}
-                      className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af]"
-                    >
-                      <option value="Tous">Tous les niveaux</option>
-                      <option value="L1">L1</option>
-                      <option value="L2">L2</option>
-                      <option value="L3">L3</option>
-                      <option value="M1">M1</option>
-                      <option value="M2">M2</option>
-                    </select>
-                    <select
-                      value={statut}
-                      onChange={(e) => setStatut(e.target.value)}
-                      className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af]"
-                    >
-                      <option value="Tous">Tous les statuts</option>
-                      <option value="Actif">Actif</option>
-                      <option value="Inactif">Inactif</option>
-                    </select> */}
+                    <div className="grid grid-cols-2 gap-2 md:flex md:gap-4">
+                      <select
+                        value={filiere}
+                        onChange={(e) => setFiliere(e.target.value)}
+                        className="px-2 py-2 md:px-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af] text-sm md:text-base"
+                      >
+                        <option value="Toutes">Toutes filières</option>
+                        <option value="IDA">IDA</option>
+                        <option value="MIC">MIC</option>
+                        <option value="CD">CD</option>
+                      </select>
+                      <select
+                        value={niveau}
+                        onChange={(e) => setNiveau(e.target.value)}
+                        className="px-2 py-2 md:px-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af] text-sm md:text-base"
+                      >
+                        <option value="Tous">Tous niveaux</option>
+                        <option value="L1">L1</option>
+                        <option value="L2">L2</option>
+                        <option value="L3">L3</option>
+                        <option value="M1">M1</option>
+                        <option value="M2">M2</option>
+                      </select>
+                     
+                    </div>
                   </div>
                 </div>
                 
@@ -486,30 +511,29 @@ const GestionEtudiants = () => {
                   <table className="w-full">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Étudiant</th>
-                        <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Filière & Niveau</th>
-                        <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Statut</th>
-                        <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Actions</th>
+                        <th className="px-2 md:px-4 py-2 text-left text-xs md:text-sm font-medium text-gray-500">Étudiant</th>
+                        <th className="px-2 md:px-4 py-2 text-left text-xs md:text-sm font-medium text-gray-500">Filière & Niveau</th>
+                        <th className="px-2 md:px-4 py-2 text-left text-xs md:text-sm font-medium text-gray-500">Statut</th>
+                        <th className="px-2 md:px-4 py-2 text-left text-xs md:text-sm font-medium text-gray-500">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                       {currentEtudiants.map((etudiant) => (
                         <tr key={etudiant.id} className="hover:bg-gray-50">
-                          <td className="px-4 py-4">
+                          <td className="px-2 md:px-4 py-3">
                             <div className="flex items-center cursor-pointer" onClick={() => handleView(etudiant.id)}>
                               <img 
                                 src={etudiant.avatar} 
                                 alt="Avatar" 
-                                className="w-10 h-10 rounded-full mr-3 object-cover" 
+                                className="w-8 h-8 md:w-10 md:h-10 rounded-full mr-2 md:mr-3 object-cover" 
                               />
                               <div>
-                                <p className="font-medium text-gray-900">{etudiant.prenom} {etudiant.nom}</p>
-                                <p className="text-sm text-gray-500">{etudiant.email}</p>
-                                <p className="text-sm text-gray-500">{etudiant.telephone}</p>
+                                <p className="font-medium text-gray-900 text-xs md:text-sm">{etudiant.prenom} {etudiant.nom}</p>
+                                <p className="text-xs text-gray-500 truncate max-w-[120px] md:max-w-none">{etudiant.email}</p>
                               </div>
                             </div>
                           </td>
-                          <td className="px-4 py-4">
+                          <td className="px-2 md:px-4 py-3">
                             <span className={`px-2 py-1 text-xs rounded-full ${
                               etudiant.filiere === 'IDA' ? 'bg-blue-100 text-blue-800' :
                               etudiant.filiere === 'MIC' ? 'bg-purple-100 text-purple-800' :
@@ -523,7 +547,7 @@ const GestionEtudiants = () => {
                               </span>
                             </div>
                           </td>
-                          <td className="px-4 py-4">
+                          <td className="px-2 md:px-4 py-3">
                             <span className={`px-2 py-1 text-xs rounded-full ${
                               etudiant.status === 'Actif' 
                                 ? 'bg-green-100 text-green-800' 
@@ -532,28 +556,28 @@ const GestionEtudiants = () => {
                               {etudiant.status}
                             </span>
                           </td>
-                          <td className="px-4 py-4">
-                            <div className="flex gap-2">
+                          <td className="px-2 md:px-4 py-3">
+                            <div className="flex gap-1 md:gap-2">
                               <button 
-                                className="text-blue-600 hover:text-blue-800"
+                                className="text-blue-600 hover:text-blue-800 p-1"
                                 onClick={() => handleView(etudiant.id)}
                                 title="Voir détails"
                               >
-                                <i className="fa-solid fa-eye"></i>
+                                <i className="fa-solid fa-eye text-xs md:text-base"></i>
                               </button>
                               <button 
-                                className="text-[#1e40af] hover:text-[#1e3a8a]"
+                                className="text-[#1e40af] hover:text-[#1e3a8a] p-1"
                                 onClick={() => handleEdit(etudiant.id)}
                                 title="Modifier"
                               >
-                                <i className="fa-solid fa-edit"></i>
+                                <i className="fa-solid fa-edit text-xs md:text-base"></i>
                               </button>
                               <button 
-                                className="text-red-600 hover:text-red-800"
+                                className="text-red-600 hover:text-red-800 p-1"
                                 onClick={() => handleDelete(etudiant.id)}
                                 title="Supprimer"
                               >
-                                <i className="fa-solid fa-trash"></i>
+                                <i className="fa-solid fa-trash text-xs md:text-base"></i>
                               </button>
                             </div>
                           </td>
@@ -563,23 +587,23 @@ const GestionEtudiants = () => {
                   </table>
                 </div>
                 
-                <div className="p-4 border-t flex flex-col md:flex-row justify-between items-center">
-                  <span className="text-sm text-gray-500 mb-2 md:mb-0">
+                <div className="p-3 md:p-4 border-t flex flex-col sm:flex-row justify-between items-center">
+                  <span className="text-xs md:text-sm text-gray-500 mb-2 sm:mb-0">
                     Affichage {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredEtudiants.length)} sur {filteredEtudiants.length} étudiants
                   </span>
                   <div className="flex gap-2">
                     <button 
-                      className={`px-3 py-1 border rounded ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'}`}
+                      className={`px-2 py-1 text-xs md:text-sm border rounded ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'}`}
                       onClick={goToPreviousPage}
                       disabled={currentPage === 1}
                     >
                       Précédent
                     </button>
-                    <button className="px-3 py-1 bg-[#1e40af] text-white rounded">
+                    <button className="px-2 py-1 text-xs md:text-sm bg-[#1e40af] text-white rounded">
                       {currentPage}
                     </button>
                     <button 
-                      className={`px-3 py-1 border rounded ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'}`}
+                      className={`px-2 py-1 text-xs md:text-sm border rounded ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'}`}
                       onClick={goToNextPage}
                       disabled={currentPage === totalPages}
                     >
@@ -592,26 +616,26 @@ const GestionEtudiants = () => {
               {/* Partie 2: Formulaire */}
               {showForm ? (
                 <div className="bg-white rounded-lg shadow-sm border">
-                  <div className="p-6 border-b">
+                  <div className="p-4 md:p-6 border-b">
                     <h3 className="text-lg font-semibold text-gray-800">
                       {isEditing ? 'Modifier un Étudiant' : 'Ajouter un Étudiant'}
                     </h3>
                   </div>
                   
-                  <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                  <form onSubmit={handleSubmit} className="p-4 md:p-6 space-y-3 md:space-y-4">
                     <div className="flex flex-col items-center">
                       <div className="relative">
                         <img 
                           src={imagePreview || "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-default.jpg"} 
                           alt="Preview" 
-                          className="w-24 h-24 rounded-full object-cover border-4 border-[#1e40af]"
+                          className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-4 border-[#1e40af]"
                         />
                         <label 
                           htmlFor="avatar-upload"
                           className="absolute bottom-0 right-0 bg-white rounded-full p-1 border cursor-pointer"
                           title="Changer l'image"
                         >
-                          <i className="fa-solid fa-camera text-[#1e40af]"></i>
+                          <i className="fa-solid fa-camera text-[#1e40af] text-xs"></i>
                         </label>
                         <input
                           id="avatar-upload"
@@ -622,78 +646,78 @@ const GestionEtudiants = () => {
                           ref={fileInputRef}
                         />
                       </div>
-                      <p className="mt-2 text-sm text-gray-500">Cliquez sur l'icône pour changer la photo</p>
+                      <p className="mt-2 text-xs md:text-sm text-gray-500">Cliquez pour changer la photo</p>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+                        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Nom</label>
                         <input
                           type="text"
                           name="nom"
                           value={formData.nom}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af]"
+                          className="w-full px-2 md:px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af] text-sm md:text-base"
                           required
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
+                        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Prénom</label>
                         <input
                           type="text"
                           name="prenom"
                           value={formData.prenom}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af]"
+                          className="w-full px-2 md:px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af] text-sm md:text-base"
                           required
                         />
                       </div>
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                      <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Email</label>
                       <input
                         type="email"
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af]"
+                        className="w-full px-2 md:px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af] text-sm md:text-base"
                         required
                       />
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Mot de Passe</label>
+                      <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Mot de Passe</label>
                       <input
                         type="password"
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af]"
+                        className="w-full px-2 md:px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af] text-sm md:text-base"
                         required={!isEditing}
                       />
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
+                      <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Téléphone</label>
                       <input
                         type="tel"
                         name="telephone"
                         value={formData.telephone}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af]"
+                        className="w-full px-2 md:px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af] text-sm md:text-base"
                         required
                       />
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Filière</label>
+                        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Filière</label>
                         <select
                           name="filiere"
                           value={formData.filiere}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af]"
+                          className="w-full px-2 md:px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af] text-sm md:text-base"
                           required
                         >
                           <option value="">Sélectionner une filière</option>
@@ -703,12 +727,12 @@ const GestionEtudiants = () => {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Niveau</label>
+                        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Niveau</label>
                         <select
                           name="niveau"
                           value={formData.niveau}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af]"
+                          className="w-full px-2 md:px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af] text-sm md:text-base"
                           required
                         >
                           <option value="">Sélectionner un niveau</option>
@@ -722,34 +746,34 @@ const GestionEtudiants = () => {
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Date d'inscription</label>
+                      <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Date d'inscription</label>
                       <input
                         type="date"
                         name="dateInscription"
                         value={formData.dateInscription}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af]"
+                        className="w-full px-2 md:px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af] text-sm md:text-base"
                         required
                       />
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Statut</label>
+                      <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Statut</label>
                       <select
                         name="status"
                         value={formData.status}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af]"
+                        className="w-full px-2 md:px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af] text-sm md:text-base"
                       >
                         <option value="Actif">Actif</option>
                         <option value="Inactif">Inactif</option>
                       </select>
                     </div>
                     
-                    <div className="flex gap-4 pt-4">
+                    <div className="flex gap-3 md:gap-4 pt-4">
                       <button 
                         type="submit"
-                        className="bg-[#1e40af] text-white px-6 py-2 rounded-lg hover:bg-[#1e3a8a] transition-colors"
+                        className="bg-[#1e40af] text-white px-4 py-2 rounded-lg hover:bg-[#1e3a8a] transition-colors text-sm md:text-base flex-1"
                       >
                         <i className="fa-solid fa-save mr-2"></i>
                         Enregistrer
@@ -757,7 +781,7 @@ const GestionEtudiants = () => {
                       <button 
                         type="button"
                         onClick={resetForm}
-                        className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors"
+                        className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors text-sm md:text-base flex-1"
                       >
                         <i className="fa-solid fa-times mr-2"></i>
                         Annuler
@@ -767,16 +791,16 @@ const GestionEtudiants = () => {
                 </div>
               ) : (
                 <div className="bg-white rounded-lg shadow-sm border flex items-center justify-center">
-                  <div className="text-center p-12">
-                    <i className="fa-solid fa-graduation-cap text-5xl text-gray-300 mb-4"></i>
-                    <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                  <div className="text-center p-6 md:p-12">
+                    <i className="fa-solid fa-graduation-cap text-4xl md:text-5xl text-gray-300 mb-4"></i>
+                    <h3 className="text-base md:text-lg font-semibold text-gray-700 mb-2">
                       {isEditing ? 'Modification' : 'Ajout'} d'un étudiant
                     </h3>
-                    <p className="text-gray-500 mb-4">
+                    <p className="text-xs md:text-sm text-gray-500 mb-4">
                       Cliquez sur "Ajouter un étudiant" pour commencer à créer un nouveau profil
                     </p>
                     <button 
-                      className="bg-[#1e40af] text-white px-4 py-2 rounded-lg hover:bg-[#1e3a8a] transition-colors flex items-center mx-auto"
+                      className="bg-[#1e40af] text-white px-3 py-2 rounded-lg hover:bg-[#1e3a8a] transition-colors flex items-center mx-auto text-sm md:text-base"
                       onClick={() => {
                         resetForm();
                         setShowForm(true);
@@ -795,11 +819,11 @@ const GestionEtudiants = () => {
 
       {/* Modale de détails */}
       {viewingEtudiant && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl">
-            <div className="p-6">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="p-4 md:p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold">Détails de l'étudiant</h3>
+                <h3 className="text-lg md:text-xl font-bold">Détails de l'étudiant</h3>
                 <button 
                   className="text-gray-500 hover:text-gray-700"
                   onClick={() => setViewingEtudiant(null)}
@@ -808,55 +832,55 @@ const GestionEtudiants = () => {
                 </button>
               </div>
               
-              <div className="flex flex-col md:flex-row gap-6">
-                <div className="flex-shrink-0">
+              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+                <div className="flex-shrink-0 mx-auto md:mx-0">
                   <img 
                     src={viewingEtudiant.avatar} 
                     alt="Avatar" 
-                    className="w-32 h-32 rounded-full object-cover border-4 border-[#1e40af]"
+                    className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-[#1e40af]"
                   />
                 </div>
                 
                 <div className="flex-1">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                     <div>
-                      <p className="text-sm text-gray-500">Matricule</p>
-                      <p className="font-medium">{viewingEtudiant.matricule}</p>
+                      <p className="text-xs md:text-sm text-gray-500">Matricule</p>
+                      <p className="font-medium text-sm md:text-base">{viewingEtudiant.matricule}</p>
                     </div>
                     
                     <div>
-                      <p className="text-sm text-gray-500">Nom complet</p>
-                      <p className="font-medium">{viewingEtudiant.prenom} {viewingEtudiant.nom}</p>
+                      <p className="text-xs md:text-sm text-gray-500">Nom complet</p>
+                      <p className="font-medium text-sm md:text-base">{viewingEtudiant.prenom} {viewingEtudiant.nom}</p>
                     </div>
                     
                     <div>
-                      <p className="text-sm text-gray-500">Filière</p>
-                      <p className="font-medium">{viewingEtudiant.filiere}</p>
+                      <p className="text-xs md:text-sm text-gray-500">Filière</p>
+                      <p className="font-medium text-sm md:text-base">{viewingEtudiant.filiere}</p>
                     </div>
                     
                     <div>
-                      <p className="text-sm text-gray-500">Niveau</p>
-                      <p className="font-medium">{viewingEtudiant.niveau}</p>
+                      <p className="text-xs md:text-sm text-gray-500">Niveau</p>
+                      <p className="font-medium text-sm md:text-base">{viewingEtudiant.niveau}</p>
                     </div>
                     
                     <div>
-                      <p className="text-sm text-gray-500">Statut</p>
-                      <p className="font-medium">{viewingEtudiant.status}</p>
+                      <p className="text-xs md:text-sm text-gray-500">Statut</p>
+                      <p className="font-medium text-sm md:text-base">{viewingEtudiant.status}</p>
                     </div>
                     
                     <div>
-                      <p className="text-sm text-gray-500">Email</p>
-                      <p className="font-medium">{viewingEtudiant.email}</p>
+                      <p className="text-xs md:text-sm text-gray-500">Email</p>
+                      <p className="font-medium text-sm md:text-base">{viewingEtudiant.email}</p>
                     </div>
                     
                     <div>
-                      <p className="text-sm text-gray-500">Téléphone</p>
-                      <p className="font-medium">{viewingEtudiant.telephone}</p>
+                      <p className="text-xs md:text-sm text-gray-500">Téléphone</p>
+                      <p className="font-medium text-sm md:text-base">{viewingEtudiant.telephone}</p>
                     </div>
                     
                     <div>
-                      <p className="text-sm text-gray-500">Date d'inscription</p>
-                      <p className="font-medium">{viewingEtudiant.dateInscription}</p>
+                      <p className="text-xs md:text-sm text-gray-500">Date d'inscription</p>
+                      <p className="font-medium text-sm md:text-base">{viewingEtudiant.dateInscription}</p>
                     </div>
                   </div>
                 </div>
@@ -864,7 +888,7 @@ const GestionEtudiants = () => {
               
               <div className="mt-6 flex justify-end">
                 <button 
-                  className="bg-[#1e40af] text-white px-4 py-2 rounded-lg hover:bg-[#1e3a8a]"
+                  className="bg-[#1e40af] text-white px-3 py-2 rounded-lg hover:bg-[#1e3a8a] text-sm md:text-base"
                   onClick={() => {
                     setViewingEtudiant(null);
                     handleEdit(viewingEtudiant.id);

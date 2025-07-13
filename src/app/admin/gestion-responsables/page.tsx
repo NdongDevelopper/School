@@ -38,6 +38,9 @@ const FILIERES_STORAGE_KEY = 'gestion-responsables:filieres';
 const GestionResponsables = () => {
   const pathname = usePathname();
   const { user } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   // Navigation items
   const navItems = [
@@ -193,11 +196,12 @@ const GestionResponsables = () => {
     setResponsables([...responsables, responsableToAdd]);
     setShowAddModal(false);
     resetForm();
+    setCurrentPage(Math.ceil((responsables.length + 1) / itemsPerPage));
   };
 
   // Ouvrir le modal d'édition
   const handleEditClick = (responsable: Responsable) => {
-    setCurrentResponsable(responsable);
+    setCurrentResponsable({...responsable});
     setShowEditModal(true);
     setFormError('');
   };
@@ -225,6 +229,12 @@ const GestionResponsables = () => {
     if (confirm('Êtes-vous sûr de vouloir supprimer ce responsable ?')) {
       const updatedResponsables = responsables.filter(r => r.id !== id);
       setResponsables(updatedResponsables);
+      
+      // Recalculer la pagination
+      const totalPages = Math.ceil((responsables.length - 1) / itemsPerPage);
+      if (currentPage > totalPages) {
+        setCurrentPage(totalPages > 0 ? totalPages : 1);
+      }
     }
   };
 
@@ -255,12 +265,45 @@ const GestionResponsables = () => {
     return matchesFiliere && matchesSearch;
   });
 
+  // Pagination
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredResponsables.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredResponsables.length / itemsPerPage);
+
+  // Changer de page
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+  const goToPrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   return (
     <RouteGuard roles={['admin']}>
       <div className="min-h-screen bg-gray-50 flex flex-col">
+        {/* Menu Hamburger pour mobile - Position corrigée */}
+        <div className="md:hidden fixed top-20 left-4 z-50">
+          <button 
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="bg-[#1e40af] text-white p-2 rounded-lg"
+          >
+            <i className="fa-solid fa-bars text-xl"></i>
+          </button>
+        </div>
+
         <div className="flex flex-1">
-          {/* Sidebar */}
-          <div className="fixed left-0 top-0 h-full w-64 bg-[#1e40af] text-white z-40" style={{ top: '64px' }}>
+          {/* Sidebar - Position corrigée */}
+          <div 
+            className={`fixed left-0 top-16 h-[calc(100%-4rem)] w-64 bg-[#1e40af] text-white z-40 transition-transform duration-300 ${
+              sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            } md:translate-x-0 md:top-0 md:h-full`}
+          >
             <div className="p-4 border-b border-blue-400">
               <h2 className="text-lg font-semibold text-white">Administrateur Général de l'Université</h2>
               <p className="text-xs text-blue-200">Université Numérique du Sénégal</p>
@@ -276,6 +319,7 @@ const GestionResponsables = () => {
                       ? 'bg-blue-700 border-r-4 border-white' 
                       : 'hover:bg-blue-700'
                   }`}
+                  onClick={() => setSidebarOpen(false)}
                 >
                   <i className={`${item.icon} mr-3`}></i>
                   <span>{item.name}</span>
@@ -299,15 +343,23 @@ const GestionResponsables = () => {
             </div>
           </div>
 
+          {/* Overlay pour fermer le menu sur mobile */}
+          {sidebarOpen && (
+            <div 
+              className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden"
+              onClick={() => setSidebarOpen(false)}
+            ></div>
+          )}
+
           {/* Main Content */}
-          <div className="ml-64 flex-1 mt-16">
+          <div className="md:ml-64 flex-1 mt-16">
             {/* Content */}
             <div className="p-4 md:p-6">
               {/* En-tête de page avec bouton d'action */}
-              <div className="bg-white shadow-sm border-b p-6 mb-6">
-                <div className="flex justify-between items-center">
+              <div className="bg-white shadow-sm border-b p-4 md:p-6 mb-4 md:mb-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-800">Gestion des Responsables</h2>
+                    <h2 className="text-xl md:text-2xl font-bold text-gray-800">Gestion des Responsables</h2>
                     <p className="text-gray-600 text-sm">Administration des responsables de filière</p>
                   </div>
                   <button 
@@ -319,20 +371,21 @@ const GestionResponsables = () => {
                     }}
                   >
                     <i className="fa-solid fa-plus mr-2"></i>
-                    Ajouter un Responsable
+                    <span className="hidden sm:inline">Ajouter un Responsable</span>
+                    <span className="sm:hidden">Ajouter</span>
                   </button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6">
                 {/* Partie 1: Liste des Responsables */}
                 <div className="bg-white rounded-lg shadow-sm border">
-                  <div className="p-6 border-b">
+                  <div className="p-4 md:p-6 border-b">
                     <h3 className="text-lg font-semibold text-gray-800 mb-4">Liste des Responsables</h3>
-                    <div className="flex gap-4 mb-4">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4">
                       <input 
                         type="text" 
-                        placeholder="Rechercher par nom, prénom ou matricule..." 
+                        placeholder="Rechercher..." 
                         className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af]"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
@@ -352,8 +405,9 @@ const GestionResponsables = () => {
                     </div>
                   </div>
                   
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
+                  {/* Tableau pour desktop */}
+                  <div className="hidden md:block overflow-x-auto">
+                    <table className="w-full min-w-[700px]">
                       <thead className="bg-gray-50">
                         <tr>
                           <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">Responsable</th>
@@ -364,8 +418,8 @@ const GestionResponsables = () => {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200">
-                        {filteredResponsables.length > 0 ? (
-                          filteredResponsables.map((responsable) => (
+                        {currentItems.length > 0 ? (
+                          currentItems.map((responsable) => (
                             <tr key={responsable.id} className="hover:bg-gray-50">
                               <td className="px-4 py-4">
                                 <div className="flex items-center">
@@ -432,17 +486,159 @@ const GestionResponsables = () => {
                     </table>
                   </div>
                   
-                  <div className="p-4 border-t flex justify-between items-center">
+                  {/* Liste responsive pour mobile */}
+                  <div className="md:hidden">
+                    {currentItems.length > 0 ? (
+                      currentItems.map((responsable) => (
+                        <div key={responsable.id} className="p-4 border-b">
+                          <div className="flex items-start">
+                            <div className="mr-3 flex-shrink-0">
+                              {responsable.image ? (
+                                <img 
+                                  src={responsable.image} 
+                                  alt={responsable.nom} 
+                                  className="w-12 h-12 rounded-full object-cover"
+                                />
+                              ) : (
+                                <div className="bg-gray-200 border-2 border-dashed rounded-full w-12 h-12 flex items-center justify-center">
+                                  <i className="fa-solid fa-user text-gray-400"></i>
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex justify-between">
+                                <div>
+                                  <p className="font-medium text-gray-900">
+                                    {responsable.nom} {responsable.prenom}
+                                  </p>
+                                  <p className="text-sm text-gray-500">{responsable.email}</p>
+                                </div>
+                                <div className="flex gap-2">
+                                  <button 
+                                    className="text-blue-600 hover:text-blue-800"
+                                    onClick={() => handleEditClick(responsable)}
+                                  >
+                                    <i className="fa-solid fa-edit"></i>
+                                  </button>
+                                  <button 
+                                    className="text-red-600 hover:text-red-800"
+                                    onClick={() => handleDeleteResponsable(responsable.id)}
+                                  >
+                                    <i className="fa-solid fa-trash"></i>
+                                  </button>
+                                </div>
+                              </div>
+                              
+                              <div className="mt-2 grid grid-cols-2 gap-2">
+                                <div>
+                                  <p className="text-xs text-gray-500">Matricule</p>
+                                  <p className="text-sm">{responsable.matricule}</p>
+                                </div>
+                                <div>
+                                  <p className="text-xs text-gray-500">Filière</p>
+                                  <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                                    {responsable.filiere}
+                                  </span>
+                                </div>
+                                <div>
+                                  <p className="text-xs text-gray-500">Statut</p>
+                                  <span className={`px-2 py-1 text-xs rounded-full ${
+                                    responsable.status === 'Actif' 
+                                      ? 'bg-green-100 text-green-800' 
+                                      : 'bg-red-100 text-red-800'
+                                  }`}>
+                                    {responsable.status}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="px-4 py-8 text-center text-gray-500">
+                        Aucun responsable trouvé
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Pagination */}
+                  <div className="p-4 border-t flex flex-col md:flex-row justify-between items-center gap-4">
                     <span className="text-sm text-gray-500">
-                      Affichage 1-{filteredResponsables.length} sur {filteredResponsables.length} responsables
+                      Affichage {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredResponsables.length)} sur {filteredResponsables.length} responsables
                     </span>
-                    <div className="flex gap-2">
-                      <button className="px-3 py-1 border rounded hover:bg-gray-50" disabled>
+                    
+                    {/* Pagination desktop */}
+                    <div className="hidden md:flex gap-2">
+                      <button 
+                        className={`px-3 py-1 border rounded flex items-center ${
+                          currentPage === 1 
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                            : 'hover:bg-gray-50'
+                        }`}
+                        onClick={goToPrevPage}
+                        disabled={currentPage === 1}
+                      >
+                        <i className="fa-solid fa-chevron-left mr-1 text-xs"></i>
                         Précédent
                       </button>
-                      <button className="px-3 py-1 bg-[#1e40af] text-white rounded">1</button>
-                      <button className="px-3 py-1 border rounded hover:bg-gray-50" disabled>
+                      
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                        <button
+                          key={page}
+                          className={`px-3 py-1 rounded ${
+                            currentPage === page
+                              ? 'bg-[#1e40af] text-white'
+                              : 'border hover:bg-gray-50'
+                          }`}
+                          onClick={() => paginate(page)}
+                        >
+                          {page}
+                        </button>
+                      ))}
+                      
+                      <button 
+                        className={`px-3 py-1 border rounded flex items-center ${
+                          currentPage === totalPages || totalPages === 0
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                            : 'hover:bg-gray-50'
+                        }`}
+                        onClick={goToNextPage}
+                        disabled={currentPage === totalPages || totalPages === 0}
+                      >
                         Suivant
+                        <i className="fa-solid fa-chevron-right ml-1 text-xs"></i>
+                      </button>
+                    </div>
+                    
+                    {/* Pagination mobile */}
+                    <div className="flex md:hidden gap-2 items-center">
+                      <button 
+                        className={`p-2 rounded ${
+                          currentPage === 1 
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                            : 'hover:bg-gray-50'
+                        }`}
+                        onClick={goToPrevPage}
+                        disabled={currentPage === 1}
+                      >
+                        <i className="fa-solid fa-chevron-left"></i>
+                      </button>
+                      
+                      <span className="px-3 py-1 border rounded bg-white text-sm">
+                        {currentPage} / {totalPages}
+                      </span>
+                      
+                      <button 
+                        className={`p-2 rounded ${
+                          currentPage === totalPages || totalPages === 0
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                            : 'hover:bg-gray-50'
+                        }`}
+                        onClick={goToNextPage}
+                        disabled={currentPage === totalPages || totalPages === 0}
+                      >
+                        <i className="fa-solid fa-chevron-right"></i>
                       </button>
                     </div>
                   </div>
@@ -451,13 +647,13 @@ const GestionResponsables = () => {
                 {/* Partie 2: Formulaire */}
                 {(showAddModal || showEditModal) && (
                   <div className="bg-white rounded-lg shadow-sm border">
-                    <div className="p-6 border-b">
+                    <div className="p-4 md:p-6 border-b">
                       <h3 className="text-lg font-semibold text-gray-800">
                         {showEditModal ? "Modifier un Responsable" : "Ajouter un Responsable"}
                       </h3>
                     </div>
                     
-                    <div className="p-6 space-y-4">
+                    <div className="p-4 md:p-6 space-y-4">
                       {formError && (
                         <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-4">
                           <i className="fa-solid fa-exclamation-circle mr-2"></i>
@@ -485,13 +681,16 @@ const GestionResponsables = () => {
                               <i className="fa-solid fa-user text-gray-400"></i>
                             </div>
                           )}
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleImageUpload(e, showEditModal)}
-                            className="text-sm"
-                            ref={fileInputRef}
-                          />
+                          <div>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleImageUpload(e, showEditModal)}
+                              className="text-sm"
+                              ref={fileInputRef}
+                            />
+                            <p className="text-xs text-gray-500 mt-1">Format JPG, PNG max 1MB</p>
+                          </div>
                         </div>
                       </div>
 
@@ -638,10 +837,10 @@ const GestionResponsables = () => {
                         </div>
                       </div>
                      
-                      <div className="flex gap-4 pt-4">
+                      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4">
                         <button 
                           type="button" 
-                          className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors flex items-center"
+                          className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors flex items-center justify-center"
                           onClick={() => {
                             setShowAddModal(false);
                             setShowEditModal(false);
@@ -653,7 +852,7 @@ const GestionResponsables = () => {
                         </button>
                         <button 
                           type="button" 
-                          className="bg-[#1e40af] text-white px-6 py-2 rounded-lg hover:bg-[#1e3a8a] transition-colors flex items-center"
+                          className="bg-[#1e40af] text-white px-6 py-2 rounded-lg hover:bg-[#1e3a8a] transition-colors flex items-center justify-center"
                           onClick={showEditModal ? handleUpdateResponsable : handleAddResponsable}
                         >
                           <i className="fa-solid fa-save mr-2"></i>
