@@ -208,21 +208,25 @@ const Deliberations = () => {
     setSelectedDeliberation(null);
   };
 
+  // CORRECTION: Création et suppression immédiate du lien
   const handleDownload = (fileName: string) => {
-    const fileUrl = `/documents/${fileName}`;
     const link = document.createElement('a');
-    link.href = fileUrl;
+    link.href = `/documents/${fileName}`;
     link.download = fileName;
+    link.style.display = 'none';
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
-    alert(`Attempting to download file: ${fileName}`);
+    
+    // Suppression immédiate après utilisation
+    setTimeout(() => {
+      document.body.removeChild(link);
+    }, 0);
   };
 
   const handleView = (fileName: string) => {
     const fileUrl = `/documents/${fileName}`;
     if (fileName.endsWith('.pdf')) {
-      window.open(fileUrl, '_blank');
+      window.open(fileUrl, '_blank', 'noopener,noreferrer');
     } else {
       alert(`Viewing file: ${fileName}\n\nFor Excel files, direct viewing requires specific tools. The file will be downloaded.`);
       handleDownload(fileName);

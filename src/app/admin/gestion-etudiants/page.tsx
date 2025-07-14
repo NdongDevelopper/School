@@ -26,39 +26,39 @@ const GestionEtudiants = () => {
   const pathname = usePathname();
   const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  
+
   const navItems = [
-    { 
+    {
       id: 'dashboard',
       name: 'Tableau de Bord',
       icon: 'fa-solid fa-chart-line',
       path: '/admin'
     },
-    { 
+    {
       id: 'responsables',
       name: 'Gestion Responsables',
       icon: 'fa-solid fa-users-gear',
       path: '/admin/gestion-responsables'
     },
-    { 
+    {
       id: 'enseignants',
       name: 'Gestion Enseignants',
       icon: 'fa-solid fa-chalkboard-user',
       path: '/admin/gestion-enseignants'
     },
-    { 
+    {
       id: 'etudiants',
       name: 'Gestion Étudiants',
       icon: 'fa-solid fa-graduation-cap',
       path: '/admin/gestion-etudiants'
     },
-    { 
+    {
       id: 'filieres',
       name: 'Gestion Filières',
       icon: 'fa-solid fa-sitemap',
       path: '/admin/gestion-filieres'
     },
-    { 
+    {
       id: 'deliberations',
       name: 'Délibérations',
       icon: 'fa-solid fa-clipboard-check',
@@ -96,68 +96,68 @@ const GestionEtudiants = () => {
         console.error('Error parsing etudiants data:', error);
       }
     }
-    
+
     if (!isInitialized) {
       const initialData: Etudiant[] = [
-        { 
-          id: 1, 
-          matricule: 'ETU2023001', 
-          nom: 'Diop', 
-          prenom: 'Mamadou', 
-          filiere: 'IDA', 
-          niveau: 'L1', 
+        {
+          id: 1,
+          matricule: 'ETU2023001',
+          nom: 'Diop',
+          prenom: 'Mamadou',
+          filiere: 'IDA',
+          niveau: 'L1',
           status: 'Actif',
           email: 'mamadou.diop@uns.sn',
           telephone: '+221 77 111 2222',
           avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg',
           dateInscription: '2023-09-15'
         },
-        { 
-          id: 2, 
-          matricule: 'ETU2023002', 
-          nom: 'Niang', 
-          prenom: 'Aïssatou', 
-          filiere: 'MIC', 
-          niveau: 'L2', 
+        {
+          id: 2,
+          matricule: 'ETU2023002',
+          nom: 'Niang',
+          prenom: 'Aïssatou',
+          filiere: 'MIC',
+          niveau: 'L2',
           status: 'Actif',
           email: 'aissatou.niang@uns.sn',
           telephone: '+221 77 222 3333',
           avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-4.jpg',
           dateInscription: '2023-09-20'
         },
-        { 
-          id: 3, 
-          matricule: 'ETU2023003', 
-          nom: 'Gueye', 
-          prenom: 'Abdoulaye', 
-          filiere: 'CD', 
-          niveau: 'M1', 
+        {
+          id: 3,
+          matricule: 'ETU2023003',
+          nom: 'Gueye',
+          prenom: 'Abdoulaye',
+          filiere: 'CD',
+          niveau: 'M1',
           status: 'Inactif',
           email: 'abdoulaye.gueye@uns.sn',
           telephone: '+221 77 333 4444',
           avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-6.jpg',
           dateInscription: '2023-09-25'
         },
-        { 
-          id: 4, 
-          matricule: 'ETU2023004', 
-          nom: 'Sarr', 
-          prenom: 'Fatim', 
-          filiere: 'IDA', 
-          niveau: 'L3', 
+        {
+          id: 4,
+          matricule: 'ETU2023004',
+          nom: 'Sarr',
+          prenom: 'Fatim',
+          filiere: 'IDA',
+          niveau: 'L3',
           status: 'Actif',
           email: 'fatim.sarr@uns.sn',
           telephone: '+221 77 444 5555',
           avatar: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-8.jpg',
           dateInscription: '2023-10-05'
         },
-        { 
-          id: 5, 
-          matricule: 'ETU2023005', 
-          nom: 'Fall', 
-          prenom: 'Marième', 
-          filiere: 'MIC', 
-          niveau: 'M2', 
+        {
+          id: 5,
+          matricule: 'ETU2023005',
+          nom: 'Fall',
+          prenom: 'Marième',
+          filiere: 'MIC',
+          niveau: 'M2',
           status: 'Actif',
           email: 'marieme.fall@uns.sn',
           telephone: '+221 77 555 6666',
@@ -196,15 +196,15 @@ const GestionEtudiants = () => {
 
   // Filtrage des étudiants
   const filteredEtudiants = etudiants.filter((etudiant) => {
-    const matchesSearch = search === '' || 
-      etudiant.nom.toLowerCase().includes(search.toLowerCase()) || 
-      etudiant.prenom.toLowerCase().includes(search.toLowerCase()) || 
+    const matchesSearch = search === '' ||
+      etudiant.nom.toLowerCase().includes(search.toLowerCase()) ||
+      etudiant.prenom.toLowerCase().includes(search.toLowerCase()) ||
       etudiant.email.toLowerCase().includes(search.toLowerCase());
-    
+
     const matchesFiliere = filiere === 'Toutes' || etudiant.filiere === filiere;
     const matchesNiveau = niveau === 'Tous' || etudiant.niveau === niveau;
     const matchesStatut = statut === 'Tous' || etudiant.status === statut;
-    
+
     return matchesSearch && matchesFiliere && matchesNiveau && matchesStatut;
   });
 
@@ -224,7 +224,7 @@ const GestionEtudiants = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      
+
       // Créer un aperçu de l'image
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -255,20 +255,30 @@ const GestionEtudiants = () => {
       setEditingId(id);
       setIsEditing(true);
       setShowForm(true);
-      setViewingEtudiant(null);
+      setViewingEtudiant(null); // Close view when editing
     }
   };
 
   // Gestion de la suppression d'un étudiant
   const handleDelete = (id: number) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer cet étudiant ?')) {
+      // --- CORRECTION APPLIQUÉE ICI ---
+      // Reset any related UI states first to prevent conflicts during reconciliation
+      setViewingEtudiant(null);
+      setShowForm(false);
+      setIsEditing(false);
+      setEditingId(null);
+      // --- FIN DE LA CORRECTION ---
+
       const updatedEtudiants = etudiants.filter(e => e.id !== id);
       setEtudiants(updatedEtudiants);
-      
+
       // Réajuster la pagination
       const newTotalPages = Math.ceil(updatedEtudiants.length / itemsPerPage);
-      if (currentPage > newTotalPages) {
-        setCurrentPage(newTotalPages > 0 ? newTotalPages : 1);
+      if (currentPage > newTotalPages && newTotalPages > 0) { // Ensure newTotalPages is not 0 before setting
+        setCurrentPage(newTotalPages);
+      } else if (newTotalPages === 0) {
+        setCurrentPage(1); // If no students left, go to page 1
       }
     }
   };
@@ -278,6 +288,8 @@ const GestionEtudiants = () => {
     const etudiant = etudiants.find(e => e.id === id);
     if (etudiant) {
       setViewingEtudiant(etudiant);
+      setShowForm(false); // Close form when viewing
+      setSidebarOpen(false); // Close sidebar on mobile when viewing
     }
   };
 
@@ -299,7 +311,8 @@ const GestionEtudiants = () => {
     setEditingId(null);
     setIsEditing(false);
     setShowForm(false);
-    
+    setViewingEtudiant(null); // Ensure view is also closed
+
     // Réinitialiser l'input fichier
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -309,13 +322,13 @@ const GestionEtudiants = () => {
   // Soumission du formulaire
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Utiliser l'image preview comme URL d'avatar
     let avatarUrl = formData.avatar || 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-default.jpg';
-    
+
     if (isEditing && editingId !== null) {
       // Mise à jour de l'étudiant existant
-      const updatedEtudiants = etudiants.map(e => 
+      const updatedEtudiants = etudiants.map(e =>
         e.id === editingId ? {
           ...e,
           nom: formData.nom,
@@ -334,7 +347,7 @@ const GestionEtudiants = () => {
     } else {
       // Ajout d'un nouvel étudiant
       const newId = etudiants.length > 0 ? Math.max(...etudiants.map(e => e.id)) + 1 : 1;
-      
+
       const newEtudiant: Etudiant = {
         id: newId,
         matricule: `ETU${new Date().getFullYear()}${newId.toString().padStart(3, '0')}`,
@@ -348,11 +361,11 @@ const GestionEtudiants = () => {
         dateInscription: formData.dateInscription,
         avatar: avatarUrl
       };
-      
+
       setEtudiants([...etudiants, newEtudiant]);
       alert('Étudiant ajouté avec succès !');
     }
-    
+
     resetForm();
   };
 
@@ -370,19 +383,32 @@ const GestionEtudiants = () => {
     }
   };
 
+  // Générer les numéros de page
+  const pageNumbers = [];
+  for (let i = 1; i <= totalPages; i++) {
+    pageNumbers.push(i);
+  }
+
+  // Go to specific page
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
   return (
     <RouteGuard roles={['admin']}>
       <div className="min-h-screen bg-gray-50 flex">
         {/* Overlay pour mobile */}
         {sidebarOpen && (
-          <div 
+          <div
             className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
             onClick={() => setSidebarOpen(false)}
           ></div>
         )}
 
         {/* Sidebar - Responsive */}
-        <div 
+        <div
           className={`fixed left-0 top-0 h-full w-64 bg-[#1e40af] text-white flex flex-col z-50 transform transition-transform duration-300 ease-in-out md:translate-x-0 ${
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
@@ -392,14 +418,14 @@ const GestionEtudiants = () => {
               <h1 className="text-xl font-bold">Administrateur Général de l'Université</h1>
               <p className="text-blue-200 text-sm">Université Numérique du Sénégal</p>
             </div>
-            <button 
+            <button
               className="md:hidden text-white"
               onClick={() => setSidebarOpen(false)}
             >
               <i className="fa-solid fa-times"></i>
             </button>
           </div>
-          
+
           <nav className="flex-1 p-4">
             <ul className="space-y-2">
               {navItems.map((item) => (
@@ -420,12 +446,12 @@ const GestionEtudiants = () => {
               ))}
             </ul>
           </nav>
-          
+
           <div className="p-4 border-t border-[#3b82f6]">
             <div className="flex items-center">
-              <img 
-                src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg" 
-                alt="Admin" 
+              <img
+                src="https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-2.jpg"
+                alt="Admin"
                 className="w-10 h-10 rounded-full mr-3"
               />
               <div>
@@ -442,7 +468,7 @@ const GestionEtudiants = () => {
           <header className="bg-white shadow-sm border-b p-6">
             <div className="flex justify-between items-center">
               <div className="flex items-center">
-                <button 
+                <button
                   className="md:hidden text-gray-500 hover:text-gray-700 mr-4"
                   onClick={() => setSidebarOpen(true)}
                 >
@@ -450,11 +476,12 @@ const GestionEtudiants = () => {
                 </button>
                 <h2 className="text-xl md:text-2xl font-bold text-gray-800">Gestion des Étudiants</h2>
               </div>
-              <button 
+              <button
                 className="bg-[#1e40af] text-white px-3 py-2 md:px-4 md:py-2 rounded-lg hover:bg-[#1e3a8a] transition-colors flex items-center text-sm md:text-base"
                 onClick={() => {
                   resetForm();
                   setShowForm(true);
+                  setSidebarOpen(false); // Close sidebar when opening form on mobile
                 }}
               >
                 <i className="fa-solid fa-plus mr-1 md:mr-2"></i>
@@ -502,11 +529,11 @@ const GestionEtudiants = () => {
                         <option value="M1">M1</option>
                         <option value="M2">M2</option>
                       </select>
-                     
+
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead className="bg-gray-50">
@@ -522,10 +549,10 @@ const GestionEtudiants = () => {
                         <tr key={etudiant.id} className="hover:bg-gray-50">
                           <td className="px-2 md:px-4 py-3">
                             <div className="flex items-center cursor-pointer" onClick={() => handleView(etudiant.id)}>
-                              <img 
-                                src={etudiant.avatar} 
-                                alt="Avatar" 
-                                className="w-8 h-8 md:w-10 md:h-10 rounded-full mr-2 md:mr-3 object-cover" 
+                              <img
+                                src={etudiant.avatar}
+                                alt="Avatar"
+                                className="w-8 h-8 md:w-10 md:h-10 rounded-full mr-2 md:mr-3 object-cover"
                               />
                               <div>
                                 <p className="font-medium text-gray-900 text-xs md:text-sm">{etudiant.prenom} {etudiant.nom}</p>
@@ -536,8 +563,8 @@ const GestionEtudiants = () => {
                           <td className="px-2 md:px-4 py-3">
                             <span className={`px-2 py-1 text-xs rounded-full ${
                               etudiant.filiere === 'IDA' ? 'bg-blue-100 text-blue-800' :
-                              etudiant.filiere === 'MIC' ? 'bg-purple-100 text-purple-800' :
-                              'bg-orange-100 text-orange-800'
+                                etudiant.filiere === 'MIC' ? 'bg-purple-100 text-purple-800' :
+                                  'bg-orange-100 text-orange-800'
                             }`}>
                               {etudiant.filiere}
                             </span>
@@ -549,8 +576,8 @@ const GestionEtudiants = () => {
                           </td>
                           <td className="px-2 md:px-4 py-3">
                             <span className={`px-2 py-1 text-xs rounded-full ${
-                              etudiant.status === 'Actif' 
-                                ? 'bg-green-100 text-green-800' 
+                              etudiant.status === 'Actif'
+                                ? 'bg-green-100 text-green-800'
                                 : 'bg-red-100 text-red-800'
                             }`}>
                               {etudiant.status}
@@ -558,21 +585,21 @@ const GestionEtudiants = () => {
                           </td>
                           <td className="px-2 md:px-4 py-3">
                             <div className="flex gap-1 md:gap-2">
-                              <button 
+                              <button
                                 className="text-blue-600 hover:text-blue-800 p-1"
                                 onClick={() => handleView(etudiant.id)}
                                 title="Voir détails"
                               >
                                 <i className="fa-solid fa-eye text-xs md:text-base"></i>
                               </button>
-                              <button 
+                              <button
                                 className="text-[#1e40af] hover:text-[#1e3a8a] p-1"
                                 onClick={() => handleEdit(etudiant.id)}
                                 title="Modifier"
                               >
                                 <i className="fa-solid fa-edit text-xs md:text-base"></i>
                               </button>
-                              <button 
+                              <button
                                 className="text-red-600 hover:text-red-800 p-1"
                                 onClick={() => handleDelete(etudiant.id)}
                                 title="Supprimer"
@@ -586,26 +613,36 @@ const GestionEtudiants = () => {
                     </tbody>
                   </table>
                 </div>
-                
+
                 <div className="p-3 md:p-4 border-t flex flex-col sm:flex-row justify-between items-center">
                   <span className="text-xs md:text-sm text-gray-500 mb-2 sm:mb-0">
                     Affichage {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, filteredEtudiants.length)} sur {filteredEtudiants.length} étudiants
                   </span>
                   <div className="flex gap-2">
-                    <button 
+                    <button
                       className={`px-2 py-1 text-xs md:text-sm border rounded ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'}`}
                       onClick={goToPreviousPage}
                       disabled={currentPage === 1}
                     >
                       Précédent
                     </button>
-                    <button className="px-2 py-1 text-xs md:text-sm bg-[#1e40af] text-white rounded">
-                      {currentPage}
-                    </button>
-                    <button 
-                      className={`px-2 py-1 text-xs md:text-sm border rounded ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'}`}
+                    {pageNumbers.map((number) => (
+                      <button
+                        key={number}
+                        onClick={() => goToPage(number)}
+                        className={`px-2 py-1 text-xs md:text-sm border rounded ${
+                          currentPage === number
+                            ? 'bg-[#1e40af] text-white'
+                            : 'hover:bg-gray-50'
+                        }`}
+                      >
+                        {number}
+                      </button>
+                    ))}
+                    <button
+                      className={`px-2 py-1 text-xs md:text-sm border rounded ${currentPage === totalPages || totalPages === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'}`}
                       onClick={goToNextPage}
-                      disabled={currentPage === totalPages}
+                      disabled={currentPage === totalPages || totalPages === 0}
                     >
                       Suivant
                     </button>
@@ -613,295 +650,275 @@ const GestionEtudiants = () => {
                 </div>
               </div>
 
-              {/* Partie 2: Formulaire */}
-              {showForm ? (
-                <div className="bg-white rounded-lg shadow-sm border">
-                  <div className="p-4 md:p-6 border-b">
-                    <h3 className="text-lg font-semibold text-gray-800">
-                      {isEditing ? 'Modifier un Étudiant' : 'Ajouter un Étudiant'}
-                    </h3>
-                  </div>
-                  
-                  <form onSubmit={handleSubmit} className="p-4 md:p-6 space-y-3 md:space-y-4">
-                    <div className="flex flex-col items-center">
-                      <div className="relative">
-                        <img 
-                          src={imagePreview || "https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-default.jpg"} 
-                          alt="Preview" 
-                          className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-4 border-[#1e40af]"
+              {/* Partie 2: Formulaire ou Vue Détaillée */}
+              {(showForm || viewingEtudiant) && (
+                <div className="bg-white rounded-lg shadow-sm border p-4 md:p-6">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    {showForm ? (isEditing ? 'Modifier l\'Étudiant' : 'Ajouter un Nouvel Étudiant') : 'Détails de l\'Étudiant'}
+                  </h3>
+
+                  {viewingEtudiant ? (
+                    // Détails de l'étudiant
+                    <div className="space-y-4">
+                      <div className="flex items-center mb-4">
+                        <img
+                          src={viewingEtudiant.avatar}
+                          alt="Avatar de l'étudiant"
+                          className="w-24 h-24 rounded-full object-cover mr-4 border-2 border-[#1e40af]"
                         />
-                        <label 
-                          htmlFor="avatar-upload"
-                          className="absolute bottom-0 right-0 bg-white rounded-full p-1 border cursor-pointer"
-                          title="Changer l'image"
+                        <div>
+                          <p className="text-2xl font-bold text-gray-900">{viewingEtudiant.prenom} {viewingEtudiant.nom}</p>
+                          <p className="text-md text-gray-600">Matricule: {viewingEtudiant.matricule}</p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">Email</p>
+                          <p className="text-gray-900">{viewingEtudiant.email}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">Téléphone</p>
+                          <p className="text-gray-900">{viewingEtudiant.telephone}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">Filière</p>
+                          <span className={`px-2 py-1 text-sm rounded-full ${
+                            viewingEtudiant.filiere === 'IDA' ? 'bg-blue-100 text-blue-800' :
+                              viewingEtudiant.filiere === 'MIC' ? 'bg-purple-100 text-purple-800' :
+                                'bg-orange-100 text-orange-800'
+                          }`}>
+                            {viewingEtudiant.filiere}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">Niveau</p>
+                          <span className="px-3 py-1 bg-gray-100 text-gray-800 text-sm rounded">
+                            {viewingEtudiant.niveau}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">Date d'inscription</p>
+                          <p className="text-gray-900">{viewingEtudiant.dateInscription}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">Statut</p>
+                          <span className={`px-2 py-1 text-sm rounded-full ${
+                            viewingEtudiant.status === 'Actif'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {viewingEtudiant.status}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex gap-3 mt-6">
+                        <button
+                          className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors"
+                          onClick={() => setViewingEtudiant(null)}
                         >
-                          <i className="fa-solid fa-camera text-[#1e40af] text-xs"></i>
-                        </label>
-                        <input
-                          id="avatar-upload"
-                          type="file"
-                          accept="image/*"
-                          onChange={handleImageChange}
-                          className="hidden"
-                          ref={fileInputRef}
-                        />
+                          Fermer
+                        </button>
+                        <button
+                          className="bg-[#1e40af] text-white px-4 py-2 rounded-lg hover:bg-[#1e3a8a] transition-colors"
+                          onClick={() => handleEdit(viewingEtudiant.id)}
+                        >
+                          <i className="fa-solid fa-edit mr-2"></i>Modifier
+                        </button>
+                        <button
+                          className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                          onClick={() => handleDelete(viewingEtudiant.id)}
+                        >
+                          <i className="fa-solid fa-trash mr-2"></i>Supprimer
+                        </button>
                       </div>
-                      <p className="mt-2 text-xs md:text-sm text-gray-500">Cliquez pour changer la photo</p>
                     </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                  ) : (
+                    // Formulaire d'ajout/modification
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      {/* Avatar upload */}
                       <div>
-                        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Nom</label>
+                        <label htmlFor="avatar" className="block text-sm font-medium text-gray-700">Avatar</label>
+                        <div className="mt-1 flex items-center">
+                          <img
+                            src={imagePreview || formData.avatar || 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-default.jpg'}
+                            alt="Aperçu de l'avatar"
+                            className="w-20 h-20 rounded-full object-cover border border-gray-300 mr-4"
+                          />
+                          <input
+                            type="file"
+                            id="avatar"
+                            name="avatar"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                            ref={fileInputRef}
+                            className="block w-full text-sm text-gray-500
+                              file:mr-4 file:py-2 file:px-4
+                              file:rounded-full file:border-0
+                              file:text-sm file:font-semibold
+                              file:bg-[#e0e7ff] file:text-[#1e40af]
+                              hover:file:bg-[#c7d2fe]"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label htmlFor="nom" className="block text-sm font-medium text-gray-700">Nom</label>
+                          <input
+                            type="text"
+                            id="nom"
+                            name="nom"
+                            value={formData.nom}
+                            onChange={handleChange}
+                            required
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#1e40af] focus:border-[#1e40af] sm:text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="prenom" className="block text-sm font-medium text-gray-700">Prénom</label>
+                          <input
+                            type="text"
+                            id="prenom"
+                            name="prenom"
+                            value={formData.prenom}
+                            onChange={handleChange}
+                            required
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#1e40af] focus:border-[#1e40af] sm:text-sm"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                          <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            required
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#1e40af] focus:border-[#1e40af] sm:text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="telephone" className="block text-sm font-medium text-gray-700">Téléphone</label>
+                          <input
+                            type="tel"
+                            id="telephone"
+                            name="telephone"
+                            value={formData.telephone}
+                            onChange={handleChange}
+                            required
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#1e40af] focus:border-[#1e40af] sm:text-sm"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label htmlFor="filiere" className="block text-sm font-medium text-gray-700">Filière</label>
+                          <select
+                            id="filiere"
+                            name="filiere"
+                            value={formData.filiere}
+                            onChange={handleChange}
+                            required
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#1e40af] focus:border-[#1e40af] sm:text-sm"
+                          >
+                            <option value="">Sélectionner une filière</option>
+                            <option value="IDA">IDA (Informatique Développement d'Application)</option>
+                            <option value="MIC">MIC (Multimédia Internet et Communication)</option>
+                            <option value="CD">CD (Communication Digitale)</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label htmlFor="niveau" className="block text-sm font-medium text-gray-700">Niveau</label>
+                          <select
+                            id="niveau"
+                            name="niveau"
+                            value={formData.niveau}
+                            onChange={handleChange}
+                            required
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#1e40af] focus:border-[#1e40af] sm:text-sm"
+                          >
+                            <option value="">Sélectionner un niveau</option>
+                            <option value="L1">L1</option>
+                            <option value="L2">L2</option>
+                            <option value="L3">L3</option>
+                            <option value="M1">M1</option>
+                            <option value="M2">M2</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label htmlFor="dateInscription" className="block text-sm font-medium text-gray-700">Date d'inscription</label>
                         <input
-                          type="text"
-                          name="nom"
-                          value={formData.nom}
+                          type="date"
+                          id="dateInscription"
+                          name="dateInscription"
+                          value={formData.dateInscription}
                           onChange={handleChange}
-                          className="w-full px-2 md:px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af] text-sm md:text-base"
                           required
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#1e40af] focus:border-[#1e40af] sm:text-sm"
                         />
                       </div>
+
+                      {/* Password field only for new users, not for editing */}
+                      {!isEditing && (
+                        <div>
+                          <label htmlFor="password" className="block text-sm font-medium text-gray-700">Mot de Passe</label>
+                          <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            required={!isEditing} // Required only for new entries
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#1e40af] focus:border-[#1e40af] sm:text-sm"
+                          />
+                        </div>
+                      )}
+
                       <div>
-                        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Prénom</label>
-                        <input
-                          type="text"
-                          name="prenom"
-                          value={formData.prenom}
-                          onChange={handleChange}
-                          className="w-full px-2 md:px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af] text-sm md:text-base"
-                          required
-                        />
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Email</label>
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="w-full px-2 md:px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af] text-sm md:text-base"
-                        required
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Mot de Passe</label>
-                      <input
-                        type="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        className="w-full px-2 md:px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af] text-sm md:text-base"
-                        required={!isEditing}
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Téléphone</label>
-                      <input
-                        type="tel"
-                        name="telephone"
-                        value={formData.telephone}
-                        onChange={handleChange}
-                        className="w-full px-2 md:px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af] text-sm md:text-base"
-                        required
-                      />
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                      <div>
-                        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Filière</label>
+                        <label htmlFor="status" className="block text-sm font-medium text-gray-700">Statut</label>
                         <select
-                          name="filiere"
-                          value={formData.filiere}
+                          id="status"
+                          name="status"
+                          value={formData.status}
                           onChange={handleChange}
-                          className="w-full px-2 md:px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af] text-sm md:text-base"
                           required
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#1e40af] focus:border-[#1e40af] sm:text-sm"
                         >
-                          <option value="">Sélectionner une filière</option>
-                          <option value="IDA">IDA</option>
-                          <option value="MIC">MIC</option>
-                          <option value="CD">CD</option>
+                          <option value="Actif">Actif</option>
+                          <option value="Inactif">Inactif</option>
                         </select>
                       </div>
-                      <div>
-                        <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Niveau</label>
-                        <select
-                          name="niveau"
-                          value={formData.niveau}
-                          onChange={handleChange}
-                          className="w-full px-2 md:px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af] text-sm md:text-base"
-                          required
+
+                      <div className="flex space-x-3 mt-6">
+                        <button
+                          type="submit"
+                          className="flex-1 bg-[#1e40af] text-white px-4 py-2 rounded-lg hover:bg-[#1e3a8a] transition-colors"
                         >
-                          <option value="">Sélectionner un niveau</option>
-                          <option value="L1">L1</option>
-                          <option value="L2">L2</option>
-                          <option value="L3">L3</option>
-                          <option value="M1">M1</option>
-                          <option value="M2">M2</option>
-                        </select>
+                          {isEditing ? 'Modifier l\'Étudiant' : 'Ajouter l\'Étudiant'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={resetForm}
+                          className="flex-1 bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors"
+                        >
+                          Annuler
+                        </button>
                       </div>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Date d'inscription</label>
-                      <input
-                        type="date"
-                        name="dateInscription"
-                        value={formData.dateInscription}
-                        onChange={handleChange}
-                        className="w-full px-2 md:px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af] text-sm md:text-base"
-                        required
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">Statut</label>
-                      <select
-                        name="status"
-                        value={formData.status}
-                        onChange={handleChange}
-                        className="w-full px-2 md:px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1e40af] text-sm md:text-base"
-                      >
-                        <option value="Actif">Actif</option>
-                        <option value="Inactif">Inactif</option>
-                      </select>
-                    </div>
-                    
-                    <div className="flex gap-3 md:gap-4 pt-4">
-                      <button 
-                        type="submit"
-                        className="bg-[#1e40af] text-white px-4 py-2 rounded-lg hover:bg-[#1e3a8a] transition-colors text-sm md:text-base flex-1"
-                      >
-                        <i className="fa-solid fa-save mr-2"></i>
-                        Enregistrer
-                      </button>
-                      <button 
-                        type="button"
-                        onClick={resetForm}
-                        className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors text-sm md:text-base flex-1"
-                      >
-                        <i className="fa-solid fa-times mr-2"></i>
-                        Annuler
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              ) : (
-                <div className="bg-white rounded-lg shadow-sm border flex items-center justify-center">
-                  <div className="text-center p-6 md:p-12">
-                    <i className="fa-solid fa-graduation-cap text-4xl md:text-5xl text-gray-300 mb-4"></i>
-                    <h3 className="text-base md:text-lg font-semibold text-gray-700 mb-2">
-                      {isEditing ? 'Modification' : 'Ajout'} d'un étudiant
-                    </h3>
-                    <p className="text-xs md:text-sm text-gray-500 mb-4">
-                      Cliquez sur "Ajouter un étudiant" pour commencer à créer un nouveau profil
-                    </p>
-                    <button 
-                      className="bg-[#1e40af] text-white px-3 py-2 rounded-lg hover:bg-[#1e3a8a] transition-colors flex items-center mx-auto text-sm md:text-base"
-                      onClick={() => {
-                        resetForm();
-                        setShowForm(true);
-                      }}
-                    >
-                      <i className="fa-solid fa-plus mr-2"></i>
-                      Ajouter un Étudiant
-                    </button>
-                  </div>
+                    </form>
+                  )}
                 </div>
               )}
             </div>
           </div>
         </div>
       </div>
-
-      {/* Modale de détails */}
-      {viewingEtudiant && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="p-4 md:p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg md:text-xl font-bold">Détails de l'étudiant</h3>
-                <button 
-                  className="text-gray-500 hover:text-gray-700"
-                  onClick={() => setViewingEtudiant(null)}
-                >
-                  <i className="fa-solid fa-times"></i>
-                </button>
-              </div>
-              
-              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-                <div className="flex-shrink-0 mx-auto md:mx-0">
-                  <img 
-                    src={viewingEtudiant.avatar} 
-                    alt="Avatar" 
-                    className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-[#1e40af]"
-                  />
-                </div>
-                
-                <div className="flex-1">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-                    <div>
-                      <p className="text-xs md:text-sm text-gray-500">Matricule</p>
-                      <p className="font-medium text-sm md:text-base">{viewingEtudiant.matricule}</p>
-                    </div>
-                    
-                    <div>
-                      <p className="text-xs md:text-sm text-gray-500">Nom complet</p>
-                      <p className="font-medium text-sm md:text-base">{viewingEtudiant.prenom} {viewingEtudiant.nom}</p>
-                    </div>
-                    
-                    <div>
-                      <p className="text-xs md:text-sm text-gray-500">Filière</p>
-                      <p className="font-medium text-sm md:text-base">{viewingEtudiant.filiere}</p>
-                    </div>
-                    
-                    <div>
-                      <p className="text-xs md:text-sm text-gray-500">Niveau</p>
-                      <p className="font-medium text-sm md:text-base">{viewingEtudiant.niveau}</p>
-                    </div>
-                    
-                    <div>
-                      <p className="text-xs md:text-sm text-gray-500">Statut</p>
-                      <p className="font-medium text-sm md:text-base">{viewingEtudiant.status}</p>
-                    </div>
-                    
-                    <div>
-                      <p className="text-xs md:text-sm text-gray-500">Email</p>
-                      <p className="font-medium text-sm md:text-base">{viewingEtudiant.email}</p>
-                    </div>
-                    
-                    <div>
-                      <p className="text-xs md:text-sm text-gray-500">Téléphone</p>
-                      <p className="font-medium text-sm md:text-base">{viewingEtudiant.telephone}</p>
-                    </div>
-                    
-                    <div>
-                      <p className="text-xs md:text-sm text-gray-500">Date d'inscription</p>
-                      <p className="font-medium text-sm md:text-base">{viewingEtudiant.dateInscription}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="mt-6 flex justify-end">
-                <button 
-                  className="bg-[#1e40af] text-white px-3 py-2 rounded-lg hover:bg-[#1e3a8a] text-sm md:text-base"
-                  onClick={() => {
-                    setViewingEtudiant(null);
-                    handleEdit(viewingEtudiant.id);
-                  }}
-                >
-                  <i className="fa-solid fa-edit mr-2"></i>
-                  Modifier
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </RouteGuard>
   );
 };

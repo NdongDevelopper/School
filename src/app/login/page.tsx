@@ -48,7 +48,7 @@ export default function LoginPage() {
         <div className="max-w-md text-center z-10 p-4">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 md:mb-4">Page Authentification</h1>
           <h2 className="text-base sm:text-lg md:text-xl font-normal mb-4 md:mb-8 leading-relaxed">
-            des étudiants, prof, responsable de formation, et Administrateur Général
+            des étudiants, Enseignant, responsable de formation, et Administrateur Général
           </h2>
 
           <p className="text-sm sm:text-base md:text-lg leading-relaxed mb-6 md:mb-12 opacity-90">
@@ -88,8 +88,8 @@ export default function LoginPage() {
               <input
                 type="text"
                 required
-                className="w-full pl-12 pr-4 py-2 md:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 placeholder-gray-500 text-gray-800 text-sm md:text-base"
-                placeholder="Nom d'utilisateur"
+                className="w-full pl-12 pr-4 py-2 md:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 text-gray-800 text-sm md:text-base"
+                // J'ai supprimé l'attribut 'placeholder' ici
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
@@ -103,8 +103,8 @@ export default function LoginPage() {
               <input
                 type="password"
                 required
-                className="w-full pl-12 pr-4 py-2 md:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 placeholder-gray-500 text-gray-800 text-sm md:text-base"
-                placeholder="Mot de passe"
+                className="w-full pl-12 pr-4 py-2 md:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 text-gray-800 text-sm md:text-base"
+                // J'ai supprimé l'attribut 'placeholder' ici
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
