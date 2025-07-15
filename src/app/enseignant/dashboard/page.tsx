@@ -211,7 +211,7 @@ export default function EmploiTempsEnseignant() {
               </button>
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Emploi du temps</h1>
-                <p className="text-gray-600 text-sm">Semaine du 18 au 22 Décembre 2023</p>
+                <p className="text-gray-600 text-sm">Semaine du 18 au 22 Juillet 2025</p>
               </div>
             </div>
 

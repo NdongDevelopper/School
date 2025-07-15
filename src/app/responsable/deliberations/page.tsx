@@ -44,93 +44,208 @@ export default function DeliberationsPage() {
     router.push('/login');
   };
 
-  // Données simulées
-  const students = [
-    { 
-      id: 1, 
-      name: 'Aminata Diallo', 
-      studentId: 'L1-2024-001',
-      average: 16.5, 
-      mention: 'Bien', 
-      status: 'Admis', 
-      imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg' 
-    },
-    { 
-      id: 2, 
-      name: 'Moussa Koné', 
-      studentId: 'L1-2024-002',
-      average: 14.2, 
-      mention: 'Assez Bien', 
-      status: 'Admis', 
-      imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg' 
-    },
-    { 
-      id: 3, 
-      name: 'Fatou Sow', 
-      studentId: 'L1-2024-003',
-      average: 9.5, 
-      mention: '-', 
-      status: 'Rattrapage', 
-      imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg' 
-    },
-    { 
-      id: 4, 
-      name: 'Omar Ba', 
-      studentId: 'L1-2024-004',
-      average: 18.0, 
-      mention: 'Très Bien', 
-      status: 'Admis', 
-      imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-4.jpg' 
-    },
-    { 
-      id: 5, 
-      name: 'Aïcha Ndiaye', 
-      studentId: 'L1-2024-005',
-      average: 7.2, 
-      mention: '-', 
-      status: 'Échec', 
-      imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-6.jpg' 
-    },
-    { 
-      id: 6, 
-      name: 'Karim Belkacem', 
-      studentId: 'L1-2024-006',
-      average: 15.8, 
-      mention: 'Bien', 
-      status: 'Admis', 
-      imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-7.jpg' 
-    },
-    { 
-      id: 7, 
-      name: 'Sarah Mansouri', 
-      studentId: 'L1-2024-007',
-      average: 8.9, 
-      mention: '-', 
-      status: 'Rattrapage', 
-      imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-8.jpg' 
-    },
-  ];
+  // Données simulées par niveau
+  const studentsByLevel = {
+    L1: [
+      { 
+        id: 1, 
+        name: 'Aminata Diallo', 
+        studentId: 'L1-2024-001',
+        average: 16.5, 
+        mention: 'Bien', 
+        status: 'Admis', 
+        imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-1.jpg' 
+      },
+      { 
+        id: 2, 
+        name: 'Moussa Koné', 
+        studentId: 'L1-2024-002',
+        average: 14.2, 
+        mention: 'Assez Bien', 
+        status: 'Admis', 
+        imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-3.jpg' 
+      },
+      { 
+        id: 3, 
+        name: 'Fatou Sow', 
+        studentId: 'L1-2024-003',
+        average: 9.5, 
+        mention: '-', 
+        status: 'Rattrapage', 
+        imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg' 
+      },
+      { 
+        id: 4, 
+        name: 'Omar Ba', 
+        studentId: 'L1-2024-004',
+        average: 18.0, 
+        mention: 'Très Bien', 
+        status: 'Admis', 
+        imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-4.jpg' 
+      },
+      { 
+        id: 5, 
+        name: 'Aïcha Ndiaye', 
+        studentId: 'L1-2024-005',
+        average: 7.2, 
+        mention: '-', 
+        status: 'Échec', 
+        imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-6.jpg' 
+      },
+      { 
+        id: 6, 
+        name: 'Karim Belkacem', 
+        studentId: 'L1-2024-006',
+        average: 15.8, 
+        mention: 'Bien', 
+        status: 'Admis', 
+        imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-7.jpg' 
+      },
+      { 
+        id: 7, 
+        name: 'Sarah Mansouri', 
+        studentId: 'L1-2024-007',
+        average: 8.9, 
+        mention: '-', 
+        status: 'Rattrapage', 
+        imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-8.jpg' 
+      },
+    ],
+    L2: [
+      { 
+        id: 1, 
+        name: 'Jean Dupont', 
+        studentId: 'L2-2024-101',
+        average: 15.2, 
+        mention: 'Bien', 
+        status: 'Admis', 
+        imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-9.jpg' 
+      },
+      { 
+        id: 2, 
+        name: 'Marie Curie', 
+        studentId: 'L2-2024-102',
+        average: 17.8, 
+        mention: 'Très Bien', 
+        status: 'Admis', 
+        imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-10.jpg' 
+      },
+    ],
+    L3: [
+      { 
+        id: 1, 
+        name: 'Paul Martin', 
+        studentId: 'L3-2024-201',
+        average: 12.5, 
+        mention: 'Assez Bien', 
+        status: 'Admis', 
+        imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-11.jpg' 
+      },
+      { 
+        id: 2, 
+        name: 'Sophie Lambert', 
+        studentId: 'L3-2024-202',
+        average: 16.3, 
+        mention: 'Bien', 
+        status: 'Admis', 
+        imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-12.jpg' 
+      },
+    ],
+    M1: [
+      { 
+        id: 1, 
+        name: 'Thomas Bernard', 
+        studentId: 'M1-2024-301',
+        average: 14.7, 
+        mention: 'Bien', 
+        status: 'Admis', 
+        imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-13.jpg' 
+      },
+      { 
+        id: 2, 
+        name: 'Élise Dubois', 
+        studentId: 'M1-2024-302',
+        average: 18.2, 
+        mention: 'Très Bien', 
+        status: 'Admis', 
+        imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-14.jpg' 
+      },
+      { 
+        id: 3, 
+        name: 'Nicolas Petit', 
+        studentId: 'M1-2024-303',
+        average: 8.4, 
+        mention: '-', 
+        status: 'Échec', 
+        imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-15.jpg' 
+      },
+      { 
+        id: 4, 
+        name: 'Laura Moreau', 
+        studentId: 'M1-2024-304',
+        average: 9.1, 
+        mention: '-', 
+        status: 'Rattrapage', 
+        imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-16.jpg' 
+      },
+    ],
+    M2: [
+      { 
+        id: 1, 
+        name: 'David Leroy', 
+        studentId: 'M2-2024-401',
+        average: 16.9, 
+        mention: 'Bien', 
+        status: 'Admis', 
+        imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-17.jpg' 
+      },
+      { 
+        id: 2, 
+        name: 'Camille Richard', 
+        studentId: 'M2-2024-402',
+        average: 15.3, 
+        mention: 'Bien', 
+        status: 'Admis', 
+        imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-18.jpg' 
+      },
+      { 
+        id: 3, 
+        name: 'Antoine Martin', 
+        studentId: 'M2-2024-403',
+        average: 12.8, 
+        mention: 'Assez Bien', 
+        status: 'Admis', 
+        imageUrl: 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-19.jpg' 
+      },
+    ]
+  };
 
+  const currentStudents = studentsByLevel[selectedLevel] || [];
+  
   // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = students.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(students.length / itemsPerPage);
+  const currentItems = currentStudents.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(currentStudents.length / itemsPerPage);
 
-  // Stats
-  const stats = {
-    admis: 24,
-    echec: 8,
-    rattrapage: 5,
-    total: 37
+  // Calcul des stats dynamiquement
+  const calculateStats = () => {
+    return {
+      admis: currentStudents.filter(s => s.status === 'Admis').length,
+      echec: currentStudents.filter(s => s.status === 'Échec').length,
+      rattrapage: currentStudents.filter(s => s.status === 'Rattrapage').length,
+      total: currentStudents.length
+    };
   };
+
+  const stats = calculateStats();
 
   // Fonction d'exportation
   const handleExport = () => {
     // Créer un fichier CSV
     const csvContent = "data:text/csv;charset=utf-8," 
       + "Nom,Numéro Étudiant,Note,Mention,Statut\n"
-      + students.map(student => 
+      + currentStudents.map(student => 
           `"${student.name}",${student.studentId},${student.average},${student.mention},${student.status}`
         ).join("\n");
     
@@ -157,7 +272,7 @@ export default function DeliberationsPage() {
           ></div>
         )}
 
-        {/* Sidebar - CORRECTION: Utilisation de h-screen et flex-col pour occuper toute la hauteur */}
+        {/* Sidebar */}
         <aside 
           className={`fixed left-0 top-0 z-20 h-screen w-64 bg-indigo-800 text-white transition-transform duration-300 ease-in-out md:static md:translate-x-0 ${
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
@@ -169,7 +284,7 @@ export default function DeliberationsPage() {
               <p className="text-blue-200 text-sm mt-1">Responsable de Filière</p>
             </div>
             
-            {/* Navigation - flex-grow pour occuper l'espace disponible */}
+            {/* Navigation */}
             <nav className="flex-grow overflow-y-auto py-4">
               <ul className="space-y-1">
                 {navLinks.map((link) => (
@@ -189,7 +304,7 @@ export default function DeliberationsPage() {
               </ul>
             </nav>
             
-            {/* Footer - reste en bas */}
+            {/* Footer */}
             <div className="p-4 border-t border-indigo-600 mt-auto">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
@@ -279,6 +394,26 @@ export default function DeliberationsPage() {
                   onClick={() => setSelectedLevel('L3')}
                 >
                   Licence 3 (L3)
+                </button>
+                <button 
+                  className={`px-3 py-2 rounded-lg text-sm sm:text-base ${
+                    selectedLevel === 'M1' 
+                      ? 'bg-indigo-800 text-white' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                  onClick={() => setSelectedLevel('M1')}
+                >
+                  Master 1 (M1)
+                </button>
+                <button 
+                  className={`px-3 py-2 rounded-lg text-sm sm:text-base ${
+                    selectedLevel === 'M2' 
+                      ? 'bg-indigo-800 text-white' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                  onClick={() => setSelectedLevel('M2')}
+                >
+                  Master 2 (M2)
                 </button>
               </div>
             </nav>
@@ -404,7 +539,7 @@ export default function DeliberationsPage() {
               <div className="px-4 py-3 sm:px-6 sm:py-4 border-t border-gray-200">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
                   <p className="text-sm text-gray-700">
-                    Affichage de {indexOfFirstItem + 1} à {Math.min(indexOfLastItem, students.length)} sur {students.length} résultats
+                    Affichage de {indexOfFirstItem + 1} à {Math.min(indexOfLastItem, currentStudents.length)} sur {currentStudents.length} résultats
                   </p>
                   <div className="flex items-center space-x-1 sm:space-x-2">
                     <button 

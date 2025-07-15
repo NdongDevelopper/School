@@ -208,29 +208,23 @@ const Deliberations = () => {
     setSelectedDeliberation(null);
   };
 
-  // CORRECTION: Création et suppression immédiate du lien
+  // NOUVELLE APPROCHE : Utilisation d'un lien standard avec attribut download
+  // React gère le cycle de vie de cet élément, pas de manipulation directe du DOM
   const handleDownload = (fileName: string) => {
-    const link = document.createElement('a');
-    link.href = `/documents/${fileName}`;
-    link.download = fileName;
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
-    
-    // Suppression immédiate après utilisation
-    setTimeout(() => {
-      document.body.removeChild(link);
-    }, 0);
+    const fileUrl = `/documents/${fileName}`;
+    window.open(fileUrl, '_blank'); // Ouvrir dans un nouvel onglet pour que le navigateur gère le téléchargement
   };
+  
+  // Alternative si vous voulez toujours forcer le téléchargement sans ouvrir un nouvel onglet
+  // Vous pouvez utiliser une balise <a> dans le JSX avec l'attribut download,
+  // ou si vraiment nécessaire, une manipulation DOM simple sans setTimeout.
+  // Cependant, l'approche ci-dessus est souvent suffisante.
 
   const handleView = (fileName: string) => {
     const fileUrl = `/documents/${fileName}`;
-    if (fileName.endsWith('.pdf')) {
-      window.open(fileUrl, '_blank', 'noopener,noreferrer');
-    } else {
-      alert(`Viewing file: ${fileName}\n\nFor Excel files, direct viewing requires specific tools. The file will be downloaded.`);
-      handleDownload(fileName);
-    }
+    // Ici, la logique d'ouverture dans une nouvelle fenêtre est acceptable
+    // car elle n'ajoute pas et ne supprime pas d'éléments du DOM React.
+    window.open(fileUrl, '_blank', 'noopener,noreferrer');
   };
 
   const filteredDeliberations = deliberations.filter(d => {
@@ -582,10 +576,10 @@ const Deliberations = () => {
                              `Rejeté le ${sess.dateSoumission}`}
                             {sess.statut === 'Rejeté' && sess.commentaires && (
                                 <span className="ml-1 text-red-500 cursor-pointer text-xs md:text-sm"
-                                      onClick={() => {
-                                          setSelectedDeliberation(sess);
-                                          setShowCommentsModal(true);
-                                      }}>
+                                        onClick={() => {
+                                            setSelectedDeliberation(sess);
+                                            setShowCommentsModal(true);
+                                        }}>
                                         (Voir commentaires)
                                 </span>
                             )}

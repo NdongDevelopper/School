@@ -500,8 +500,8 @@ export default function GestionEnseignants() {
                         defaultValue={editingEnseignant?.specialite || ''}
                       >
                         <option value="">Sélectionner une filière</option>
-                        <option value="IDA">Informatique et Data Science</option>
-                        <option value="MIC">Management et Ingénierie Commerciale</option>
+                        <option value="IDA">Informatique Développement d'Application</option>
+                        <option value="MIC">Multimédia Internet et Communication</option>
                         <option value="CD">Communication Digitale</option>
                       </select>
                     </div>
