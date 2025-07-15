@@ -11,7 +11,7 @@ export default function DeliberationsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const [selectedLevel, setSelectedLevel] = useState('L1');
+  const [selectedLevel, setSelectedLevel] = useState<keyof typeof studentsByLevel>('L1');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -220,7 +220,7 @@ export default function DeliberationsPage() {
     ]
   };
 
-  const currentStudents = studentsByLevel[selectedLevel] || [];
+  const currentStudents = studentsByLevel[selectedLevel] ?? [];
   
   // Pagination
   const indexOfLastItem = currentPage * itemsPerPage;
